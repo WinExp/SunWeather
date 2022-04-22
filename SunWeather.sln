@@ -5,7 +5,12 @@ VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "SunWeather_Web", "SunWeather_Web\SunWeather_Web.vbproj", "{91D598D7-66B3-44F9-9F84-4445F7C6B3BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SunWeather_WinUI3", "SunWeather_WinUI3\SunWeather_WinUI3.csproj", "{64BF465E-FCCC-41C5-822C-FFBF6F4117F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SunWeather_WinUI3", "SunWeather_WinUI3\SunWeather_WinUI3.csproj", "{64BF465E-FCCC-41C5-822C-FFBF6F4117F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{E84CA335-1DF1-4576-8E1B-10E3EBE89DDC}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
