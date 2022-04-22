@@ -1,0 +1,19 @@
+﻿<Page
+    x:Class="SunWeather_WinUI3.Views.Pages.SearchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SunWeather_WinUI3.Views.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <ProgressRing x:Name="LocationProgressRing" IsActive="False"/>
+        <ListView x:Name="LocationListView" Height="400" Width="400" BorderThickness="1" CornerRadius="10,10,10,10"
+                  BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" Visibility="Collapsed" Opacity="0">
+            <ListView.OpacityTransition>
+                <ScalarTransition/>
+            </ListView.OpacityTransition>
+        </ListView>
+    </Grid>
+</Page>

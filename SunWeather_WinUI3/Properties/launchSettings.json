@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SunWeather_WinUI3 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SunWeather_WinUI3 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

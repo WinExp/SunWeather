@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="SunWeather_WinUI3.Views.Pages.HelpPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SunWeather_WinUI3.Views.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="30,30,0,0">
+            <TextBlock Margin="0,0,0,10" FontSize="30" FontWeight="Bold">帮助 &amp; 关于</TextBlock>
+            <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock FontWeight="SemiBold" FontSize="25" Margin="0,0,0,5">子标题</TextBlock>
+                    <TextBlock FontSize="20" Margin="0,5,0,0">内容</TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

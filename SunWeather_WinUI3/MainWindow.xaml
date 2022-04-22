@@ -1,0 +1,37 @@
+﻿<winuiex:WindowEx
+    x:Class="SunWeather_WinUI3.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SunWeather_WinUI3"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:winuiex="using:WinUIEx"
+    mc:Ignorable="d" Title="Sun Weather"
+    Height="600" Width="800" IsResizable="False" IsMaximizable="False">
+
+    <Grid>
+        <NavigationView x:Name="MainNavigationView" PaneDisplayMode="LeftCompact"
+                        PaneTitle="菜单" IsBackButtonVisible="Collapsed"
+                        SelectionChanged="MainNavigationView_SelectionChanged" SelectedItem="{x:Bind HomePageItem}">
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Name="HomePageItem" Icon="Home" Content="主页"/>
+                <NavigationViewItem x:Name="HelpPageItem" Icon="Help" Content="帮助 &amp; 关于"/>
+            </NavigationView.MenuItems>
+
+            <NavigationView.AutoSuggestBox>
+                <AutoSuggestBox x:Name="SearchLocationAutoSuggestBox" QueryIcon="Find" QuerySubmitted="AutoSuggestBox_QuerySubmitted"
+                                TextChanged="AutoSuggestBox_TextChanged" PlaceholderText="搜索天气"
+                                IsSuggestionListOpen="True" SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+                                GotFocus="AutoSuggestBox_GotFocus"/>
+            </NavigationView.AutoSuggestBox>
+
+            <Frame x:Name="PageContentFrame">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition/>
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
+        </NavigationView>
+    </Grid>
+</winuiex:WindowEx>
