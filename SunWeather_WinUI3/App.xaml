@@ -6,8 +6,29 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!--ResourceDictionary>
+                    <FontFamily x:Key="Harmony Sans">Assets/HarmonyOS/Font/#HarmonyOS_Sans_SC_Medium</FontFamily>
+                </ResourceDictionary-->
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls"/>
             </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="CardBrush" Color="#F5F5F5"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <!--Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Harmony Sans"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="FontFamily" Value="Harmony Sans"/>
+            </Style>
+            <Style TargetType="RichTextBlock">
+                <Setter Property="FontFamily" Value="Harmony Sans"/>
+            </Style>
+            <Style TargetType="RichEditBox">
+                <Setter Property="FontFamily" Value="Harmony Sans"/>
+            </Style-->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

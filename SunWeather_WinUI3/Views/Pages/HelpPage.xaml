@@ -10,12 +10,99 @@
     <Grid>
         <StackPanel Orientation="Vertical" Margin="30,30,0,0">
             <TextBlock Margin="0,0,0,10" FontSize="30" FontWeight="Bold">帮助 &amp; 关于</TextBlock>
-            <StackPanel Orientation="Vertical" Margin="0,10,0,0">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock FontWeight="SemiBold" FontSize="25" Margin="0,0,0,5">子标题</TextBlock>
-                    <TextBlock FontSize="20" Margin="0,5,0,0">内容</TextBlock>
+            <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto"
+                          Height="430">
+                <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Border Background="{ThemeResource CardBrush}"
+                                Width="250" Height="250" CornerRadius="10" BorderThickness="1" BorderBrush="LightGray"
+                                VerticalAlignment="Top">
+                            <StackPanel Orientation="Vertical" Margin="0,45,0,0"
+                                        HorizontalAlignment="Center" VerticalAlignment="Top">
+                                <Viewbox Width="50" Height="50">
+                                    <SymbolIcon Symbol="Help"/>
+                                </Viewbox>
+                                <TextBlock Foreground="Gray" Margin="5,23,0,0"
+                                           HorizontalTextAlignment="Center">
+                                    在使用过程中遇到问题？
+                                </TextBlock>
+                                <TextBlock Foreground="Gray" Margin="5,2,0,0">
+                                    请到我们的 Github 仓库提交 Issues。
+                                </TextBlock>
+                                <Button Style="{ThemeResource AccentButtonStyle}"
+                                        Width="150" Height="32" Margin="0,30,0,0"
+                                        HorizontalAlignment="Center" Click="Button_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="ms-appx:///Assets/Github_Icon.svg" Margin="0,2,4,0"/>
+                                        <TextBlock Margin="4,0,0,0">Github Issues</TextBlock>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="{ThemeResource CardBrush}"
+                                Width="405" Height="410" CornerRadius="10" BorderThickness="1" BorderBrush="LightGray"
+                                Margin="20,0,0,0" VerticalAlignment="Top">
+                            <Pivot Margin="5,5,0,0">
+                                <PivotItem Header="应用">
+                                    <ScrollViewer Height="330" VerticalScrollBarVisibility="Auto"
+                                                      HorizontalScrollMode="Disabled" Margin="0,10,0,0">
+                                        <StackPanel Orientation="Vertical">
+                                            <Expander Header="Sun Weather 是什么？"
+                                                          Width="365">
+                                                <TextBlock TextWrapping="Wrap">Sun Weather 是一个简洁，明了的天气 App。您可以在此 App 中通过和风天气 API 查询您所在城市的天气。</TextBlock>
+                                            </Expander>
+                                            <Expander Header="Sun Weather 安全吗？"
+                                                          Width="365" Margin="0,10,0,0">
+                                                <TextBlock TextWrapping="Wrap">
+                                                        所有源码均上传到 Github 并使用 
+                                                        <Hyperlink NavigateUri="https://mit-license.org/">MIT 开源协议</Hyperlink>
+                                                        进行许可，代码可查。
+                                                </TextBlock>
+                                            </Expander>
+                                            <Expander Header="为什么我找不到更新选项？"
+                                                          Width="365" Margin="0,10,0,0">
+                                                <TextBlock TextWrapping="Wrap">
+                                                        Release 1.0 版本没有提供更新功能，在以后的版本中将会提供此功能。
+                                                        请到我们的 
+                                                        <Hyperlink NavigateUri="https://github.com/WinExp/SunWeather">Github 仓库</Hyperlink>
+                                                        下载最新版 App。
+                                                </TextBlock>
+                                            </Expander>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </PivotItem>
+                            </Pivot>
+                        </Border>
+                    </StackPanel>
+                    <Border Background="{ThemeResource CardBrush}"
+                            CornerRadius="10" BorderThickness="1"
+                            BorderBrush="LightGray" Margin="0,-140,0,0"
+                            Width="250" Height="250"
+                            HorizontalAlignment="Left">
+                        <Pivot Margin="5,5,0,0">
+                            <PivotItem Header="鸣谢名单">
+                                <ListView IsItemClickEnabled="True" SelectionMode="None"
+                                          Margin="0,10,0,0">
+                                    <ListViewItem>Design by BilShiziheng</ListViewItem>
+                                    <ListViewItem>Supervised by BilShiziheng</ListViewItem>
+                                </ListView>
+                            </PivotItem>
+                            <PivotItem Header="关联项目">
+                                <ListView IsItemClickEnabled="True" ItemClick="ListView_ItemClick"
+                                          SelectionMode="None" Margin="0,10,0,0">
+                                    <ListViewItem>Windows UI Library</ListViewItem>
+                                    <ListViewItem>Windows App SDK</ListViewItem>
+                                    <ListViewItem>QWeather</ListViewItem>
+                                    <ListViewItem>QWeatherAPI</ListViewItem>
+                                </ListView>
+                            </PivotItem>
+                        </Pivot>
+                    </Border>
                 </StackPanel>
-            </StackPanel>
+            </ScrollViewer>
         </StackPanel>
+        <TextBlock Foreground="Gray" Margin="0,0,0,15"
+                   HorizontalAlignment="Center" VerticalAlignment="Bottom">©2022 WindowsExplorer Studio. All rights reserved.</TextBlock>
     </Grid>
 </Page>

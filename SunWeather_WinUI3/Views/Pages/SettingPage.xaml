@@ -12,8 +12,8 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30,30,0,0">设置</TextBlock>
         <StackPanel Orientation="Vertical" Margin="30,110,0,0">
             <StackPanel Orientation="Vertical">
-                <TextBlock VerticalAlignment="Center" Margin="0,0,0,10" FontSize="20" FontWeight="SemiBold">API 密钥</TextBlock>
-                <StackPanel Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold">API 密钥</TextBlock>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                     <PasswordBox x:Name="ApiKeyPasswordBox" PasswordRevealMode="Hidden"
                                  Width="200" PlaceholderText="输入 API 密钥" PasswordChanged="ApiKeyPasswordBox_PasswordChanged"/>
                     <CheckBox Content="显示 API 密钥" Margin="15,0,0,0"
@@ -21,15 +21,33 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="0,20,0,0">
-                <TextBlock VerticalAlignment="Center" Margin="0,0,0,10" FontSize="20" FontWeight="SemiBold">数据单位</TextBlock>
-                <RadioButtons x:Name="UnitRadioButtons">
-                    <RadioButton x:Name="MetricRadioButton" Content="公制" Tag="Metric" Checked="RadioButton_Checked"/>
-                    <RadioButton x:Name="InchRadioButton" Content="英制" Tag="Inch" Checked="RadioButton_Checked"/>
+                <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold">数据单位</TextBlock>
+                <RadioButtons Margin="0,5,0,0">
+                    <RadioButton x:Name="MetricRadioButton" Content="公制"
+                                 Tag="Metric" Checked="RadioButton_Checked"/>
+                    <RadioButton x:Name="InchRadioButton" Content="英制"
+                                 Tag="Inch" Checked="RadioButton_Checked"/>
                 </RadioButtons>
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="0,20,0,0">
-                <TextBlock VerticalAlignment="Center" Margin="0,0,0,10" FontSize="20" FontWeight="SemiBold">API 预加载</TextBlock>
-                <ToggleSwitch x:Name="PreLoadAPIToggleSwitch" OffContent="不允许预加载" OnContent="允许预加载" Toggled="ToggleSwitch_Toggled"/>
+                <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold">自动刷新</TextBlock>
+                <RadioButtons Margin="0,5,0,0">
+                    <RadioButton x:Name="FiveMinuteAutoRefreshRadioButton" Content="5 分钟"
+                                 Tag="5" Checked="RadioButton_Checked"/>
+                    <RadioButton x:Name="TenMinuteAutoRefreshRadioButton" Content="10 分钟"
+                                 Tag="10" Checked="RadioButton_Checked"/>
+                    <RadioButton x:Name="CustomMinuteAutoRefreshRadioButton"
+                                 Checked="RadioButton_Checked">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>自定义</TextBlock>
+                            <NumberBox x:Name="CustomMinuteAutoRefreshNumberBox" Margin="15,-5,0,0"
+                                       PlaceholderText="自定义刷新间隔" Width="150"
+                                       SpinButtonPlacementMode="Compact" SmallChange="1"
+                                       ValidationMode="InvalidInputOverwritten" Value="20"
+                                       Minimum="5" Maximum="60" ValueChanged="CustomMinuteAutoRefreshNumberBox_ValueChanged"/>
+                        </StackPanel>
+                    </RadioButton>
+                </RadioButtons>
             </StackPanel>
         </StackPanel>
         <Button x:Name="SaveConfigButton" Content="保存" Style="{ThemeResource AccentButtonStyle}"

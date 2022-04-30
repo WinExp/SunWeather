@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace SunWeather_WinUI3.Class.Tools.Net.Http
@@ -9,53 +12,37 @@ namespace SunWeather_WinUI3.Class.Tools.Net.Http
     internal static class WebRequests
     {
         // Get 请求
-        internal static async Task<HttpResponseMessage> GetRequestAsync(string Url, HttpMessageHandler handler = null)
+        internal static async Task<WebResponse> GetRequestAsync(string url, HttpWebRequest request = null)
         {
-            Url = Url.Trim();
-            if (handler == null)
+            url = url.Trim();
+
+            if (request == null)
             {
-                handler = new HttpClientHandler()
-                {
-                    AutomaticDecompression = DecompressionMethods.GZip
-                };
+                request = WebRequest.CreateHttp(url);
+                request.Method = "GET";
+                request.AutomaticDecompression = DecompressionMethods.GZip;
+                request.Timeout = 3000;
+                request.KeepAlive = false;
+                request.Proxy = null;
             }
-            using (HttpClient client = new HttpClient(handler))
-            {
-                return await client.GetAsync(Url);
-            }
+            
+            var response = await request.GetResponseAsync();
+            return response;
         }
 
-        // 下载文件
-        internal static async Task DownloadFile(string url, string downloadPath, string fileName, IWebProxy proxy = null)
+        internal static async Task<WebResponse> GetRequestAsync(string url, int timeout)
         {
-            HttpMessageHandler handler = new HttpClientHandler()
-            {
-                Proxy = proxy
-            };
-            using (var response = await GetRequestAsync(url, handler))
-            {
-                using (Stream stream = await response.Content.ReadAsStreamAsync())
-                {
-                    if (!Directory.Exists(downloadPath))
-                    {
-                        Directory.CreateDirectory(downloadPath);
-                    }
-                    if (File.Exists(Path.Combine(downloadPath, fileName)))
-                    {
-                        File.Delete(Path.Combine(downloadPath, fileName));
-                    }
-                    string extension = Path.GetExtension(response.RequestMessage.RequestUri.ToString());
-                    using (FileStream fs = new FileStream(Path.Combine(downloadPath, fileName), FileMode.CreateNew))
-                    {
-                        byte[] buffer = new byte[1024 * 1024 * 8];
-                        int length;
-                        while ((length = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
-                        {
-                            await fs.WriteAsync(buffer, 0, length);
-                        }
-                    }
-                }
-            }
+            url = url.Trim();
+
+            HttpWebRequest request = WebRequest.CreateHttp(url);
+            request.Method = "GET";
+            request.AutomaticDecompression = DecompressionMethods.GZip;
+            request.Timeout = timeout;
+            request.KeepAlive = false;
+            request.Proxy = null;
+
+            var response = await request.GetResponseAsync();
+            return response;
         }
     }
 }

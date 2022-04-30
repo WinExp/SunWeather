@@ -10,37 +10,106 @@
     <Grid>
         <TextBlock x:Name="SearchLocationTipTextBlock" FontSize="35"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Margin="0,0,0,40" FontWeight="SemiBold">
-            请到左方导航栏内的搜索框内搜索天气。
-        </TextBlock>
-        <ProgressRing x:Name="WeatherProgressRing" IsActive="False"/>
-        <Frame x:Name="WeatherInfoFrame" Visibility="Collapsed" Opacity="0">
-            <Frame.Content>
-                <Border CornerRadius="20,20,20,20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30,70,0,0" Width="670" Height="240" Background="{ThemeResource SystemControlAcrylicElementBrush}">
-                    <StackPanel Orientation="Vertical" Margin="35,30,0,0">
-                        <TextBlock x:Name="WeatherTitleTextBlock" FontSize="35"
-                               Margin="0,0,0,10" FontWeight="Bold"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <Image x:Name="WeatherImage" Height="100" Width="100" Margin="0,0,0,10"/>
-                            <StackPanel Orientation="Vertical" Margin="15,0,0,0">
-                                <TextBlock x:Name="TempTextBlock" FontSize="25"/>
-                                <TextBlock x:Name="WeatherDescriptionTextBlock" FontSize="20"/>
-                                <TextBlock x:Name="FeelsLikeTempTextBlock" FontSize="20"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-            </Frame.Content>
-            <Frame.OpacityTransition>
+                   Margin="0,0,0,40" FontWeight="SemiBold" Visibility="Collapsed" Opacity="0">
+            <TextBlock.OpacityTransition>
                 <ScalarTransition/>
-            </Frame.OpacityTransition>
-        </Frame>
+            </TextBlock.OpacityTransition>
+            <TextBlock.Text>
+                请到左方导航栏内的搜索框内搜索天气。
+            </TextBlock.Text>
+        </TextBlock>
+
         <TextBlock x:Name="TipTextBlock" FontSize="20"
                    HorizontalAlignment="Left" VerticalAlignment="Top"
-                   Margin="20,20,0,0" Opacity="0" FontWeight="SemiBold">
+                   Opacity="0" FontWeight="SemiBold" Margin="20,20,0,0">
             <TextBlock.OpacityTransition>
                 <ScalarTransition/>
             </TextBlock.OpacityTransition>
         </TextBlock>
+        <Button x:Name="RefreshButton" Width="85" Height="32"
+                HorizontalAlignment="Right" Click="RefreshButton_Click"
+                Opacity="0" Visibility="Collapsed"
+                VerticalAlignment="Top" Margin="0,20,20,0">
+            <StackPanel Orientation="Horizontal">
+                <Viewbox Width="18" Height="18">
+                    <SymbolIcon Symbol="Refresh"/>
+                </Viewbox>
+                <TextBlock Margin="10,0,0,0">刷新</TextBlock>
+            </StackPanel>
+            <Button.OpacityTransition>
+                <ScalarTransition/>
+            </Button.OpacityTransition>
+        </Button>
+
+        <ProgressRing x:Name="WeatherProgressRing" IsActive="False"/>
+        <ScrollViewer Height="460" Margin="30,70,0,0"
+                      VerticalAlignment="Top"
+                      HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto">
+            <Frame x:Name="WeatherInfoFrame" Visibility="Collapsed" Opacity="0">
+                <Frame.Content>
+                    <StackPanel Orientation="Vertical"
+                                HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Border CornerRadius="20" Width="670" Height="230"
+                                Background="{ThemeResource CardBrush}">
+                            <StackPanel Orientation="Horizontal" Margin="35,30,0,0">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock x:Name="WeatherTitleTextBlock" FontSize="35"
+                                               Margin="0,0,0,10" FontWeight="Bold"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Image x:Name="WeatherImage" Height="100" Width="100">
+                                            <Image.OpacityTransition>
+                                                <ScalarTransition/>
+                                            </Image.OpacityTransition>
+                                        </Image>
+                                        <StackPanel Orientation="Vertical" Margin="15,0,0,0">
+                                            <TextBlock x:Name="TempTextBlock" FontSize="25"/>
+                                            <TextBlock x:Name="WeatherDescriptionTextBlock" FontSize="20"/>
+                                            <TextBlock x:Name="MaxMinTempTextBlock" FontSize="20"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="20" Width="670" Height="210"
+                                Background="{ThemeResource CardBrush}" Margin="0,20,0,0">
+                            <StackPanel Orientation="Horizontal" Margin="35,30,0,0">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock FontSize="35" FontWeight="Bold">日出日落</TextBlock>
+                                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                                        <Image Source="ms-appx:///Assets/Seniverse/Icon/0@1x.png"
+                                           Width="30" Height="30" Margin="0,5,10,0"/>
+                                        <TextBlock x:Name="SunriseTextBlock" FontSize="25"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Image Source="ms-appx:///Assets/Seniverse/Icon/1@1x.png"
+                                           Width="30" Height="30" Margin="0,5,10,0"/>
+                                        <TextBlock x:Name="SunsetTextBlock" FontSize="25"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical" Margin="25,55,0,0">
+                                    <TextBlock x:Name="WindDirTextBlock" FontSize="20" Margin="0,15,0,0"/>
+                                    <TextBlock x:Name="FeelsLikeTempTextBlock" FontSize="20"
+                                           Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="20" Width="670" Height="230"
+                                Background="{ThemeResource CardBrush}" Margin="0,20,0,0">
+                            <StackPanel Orientation="Vertical" Margin="35,30,0,0">
+                                <TextBlock FontSize="35" FontWeight="Bold">7 天预报</TextBlock>
+                                <ScrollViewer Height="125" Width="605" Margin="0,25,0,0"
+                                              HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Disabled"
+                                              HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <StackPanel x:Name="DailyForecastStackPanel" Orientation="Horizontal"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Frame.Content>
+                <Frame.OpacityTransition>
+                    <ScalarTransition/>
+                </Frame.OpacityTransition>
+            </Frame>
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -47,16 +47,30 @@ namespace SunWeather_WinUI3.Views.Pages
                         break;
                 }
 
-                PreLoadAPIToggleSwitch.IsOn = Configs.PreLoadAPI;
+                int refreshDelay = Configs.AutoRefreshDelay;
+                if (refreshDelay == 5)
+                {
+                    FiveMinuteAutoRefreshRadioButton.IsChecked = true;
+                }
+                else if (refreshDelay == 10)
+                {
+                    TenMinuteAutoRefreshRadioButton.IsChecked = true;
+                }
+                else
+                {
+                    CustomMinuteAutoRefreshRadioButton.IsChecked = true;
+                    CustomMinuteAutoRefreshNumberBox.Text = refreshDelay.ToString();
+                }
             };
         }
 
-        private void ChangeSaveConfigButtonStatus()
+        private void UpdateSaveButtonStatus(double delay = 0)
         {
             if (!this.IsLoaded)
             {
                 return;
             }
+
             Units unit;
             if ((bool)MetricRadioButton.IsChecked)
             {
@@ -67,10 +81,23 @@ namespace SunWeather_WinUI3.Views.Pages
                 unit = Units.Inch;
             }
 
+            if ((bool)FiveMinuteAutoRefreshRadioButton.IsChecked)
+            {
+                delay = 5;
+            }
+            else if ((bool)TenMinuteAutoRefreshRadioButton.IsChecked)
+            {
+                delay = 10;
+            }
+            else
+            {
+                delay = delay == 0 ? int.Parse(CustomMinuteAutoRefreshNumberBox.Text) : delay;
+            }
+
             string key = ApiKeyPasswordBox.Password == "" ? Configs.DefaultApiKey : ApiKeyPasswordBox.Password;
-            if (key != Configs.ApiKey
-                || unit != Configs.Unit
-                || PreLoadAPIToggleSwitch.IsOn != Configs.PreLoadAPI)
+            if (key != Configs.ApiKey ||
+                unit != Configs.Unit ||
+                delay != Configs.AutoRefreshDelay)
             {
                 SaveConfigButton.Opacity = 1;
                 return;
@@ -80,12 +107,16 @@ namespace SunWeather_WinUI3.Views.Pages
 
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            ChangeSaveConfigButtonStatus();
-        }
+            if ((bool)CustomMinuteAutoRefreshRadioButton.IsChecked)
+            {
+                CustomMinuteAutoRefreshNumberBox.IsEnabled = true;
+            }
+            else
+            {
+                CustomMinuteAutoRefreshNumberBox.IsEnabled = false;
+            }
 
-        private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
-        {
-            ChangeSaveConfigButtonStatus();
+            UpdateSaveButtonStatus();
         }
 
         private void CheckBox_Changed(object sender, RoutedEventArgs e)
@@ -103,7 +134,12 @@ namespace SunWeather_WinUI3.Views.Pages
 
         private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            ChangeSaveConfigButtonStatus();
+            UpdateSaveButtonStatus();
+        }
+
+        private void CustomMinuteAutoRefreshNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            UpdateSaveButtonStatus(args.NewValue);
         }
 
         private void SaveConfigButton_Click(object sender, RoutedEventArgs e)
@@ -127,20 +163,27 @@ namespace SunWeather_WinUI3.Views.Pages
                 {
                     radioButton = InchRadioButton;
                 }
-                configWriter.SetConfigValue("Unit", radioButton.Tag.ToString());
 
-                if (PreLoadAPIToggleSwitch.IsOn)
+                string delay;
+                if ((bool)FiveMinuteAutoRefreshRadioButton.IsChecked)
                 {
-                    configWriter.SetConfigValue("PreLoadAPI", "True");
+                    delay = "5";
+                }
+                else if ((bool)TenMinuteAutoRefreshRadioButton.IsChecked)
+                {
+                    delay = "10";
                 }
                 else
                 {
-                    configWriter.SetConfigValue("PreLoadAPI", "False");
+                    delay = CustomMinuteAutoRefreshNumberBox.Text;
                 }
+
+                configWriter.SetConfigValue("Unit", radioButton.Tag.ToString());
+                configWriter.SetConfigValue("AutoRefreshDelay", delay);
                 configWriter.WriteInFile();
             }
             Configs.LoadConfig();
-            ChangeSaveConfigButtonStatus();
+            UpdateSaveButtonStatus();
         }
     }
 }

@@ -36,19 +36,6 @@ namespace SunWeather_WinUI3
             this.SearchLocationAutoSuggestBox.ItemsSource = locationName;
             Configs.LoadConfig();
             //DPIAdapted();
-            if (Configs.PreLoadAPI)
-            {
-                PreLoadApi(Configs.ApiKey);
-            }
-        }
-
-        private async Task PreLoadApi(string key)
-        {
-            try
-            {
-                await QWeatherAPI.GeoAPI.GetGeoAsync("北京", key);
-            }
-            catch { }
         }
 
         private ICommand OpenSettingPageCommand
@@ -75,7 +62,7 @@ namespace SunWeather_WinUI3
                     ContentDialog contentDialog = new ContentDialog
                     {
                         Title = "提示",
-                        Content = $@"请到设置页面配置 API 密钥。
+                        Content = $@"请到设置页面配置正确的 API 密钥。
 错误代码：{errorCode}",
                         PrimaryButtonText = "去配置",
                         PrimaryButtonCommand = OpenSettingPageCommand,
