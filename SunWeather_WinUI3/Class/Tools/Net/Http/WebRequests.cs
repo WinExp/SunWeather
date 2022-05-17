@@ -12,22 +12,37 @@ namespace SunWeather_WinUI3.Class.Tools.Net.Http
     internal static class WebRequests
     {
         // Get 请求
-        internal static async Task<WebResponse> GetRequestAsync(string url, HttpWebRequest request = null)
+        internal static async Task<WebResponse> GetRequestAsync(string url, WebHeaderCollection headers = null)
         {
             url = url.Trim();
 
-            if (request == null)
+            var request = WebRequest.CreateHttp(url);
+            request.Method = "GET";
+            request.AutomaticDecompression = DecompressionMethods.GZip;
+            request.Timeout = 3000;
+            request.KeepAlive = false;
+            request.Proxy = null;
+            if (headers != null)
             {
-                request = WebRequest.CreateHttp(url);
-                request.Method = "GET";
-                request.AutomaticDecompression = DecompressionMethods.GZip;
-                request.Timeout = 3000;
-                request.KeepAlive = false;
-                request.Proxy = null;
+                request.Headers = headers;
             }
-            
+
             var response = await request.GetResponseAsync();
             return response;
+        }
+
+        internal static async Task<string> GetStringAsync(string url, int timeout = 10000)
+        {
+            using (var response = await GetRequestAsync(url, timeout))
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
         }
 
         internal static async Task<WebResponse> GetRequestAsync(string url, int timeout)

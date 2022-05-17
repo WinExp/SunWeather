@@ -32,10 +32,12 @@
             <StackPanel Orientation="Vertical" Margin="0,20,0,0">
                 <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold">自动刷新</TextBlock>
                 <RadioButtons Margin="0,5,0,0">
+                    <RadioButton x:Name="OffAutoRefreshRadioButton" Content="关闭"
+                                 Checked="RadioButton_Checked"/>
                     <RadioButton x:Name="FiveMinuteAutoRefreshRadioButton" Content="5 分钟"
-                                 Tag="5" Checked="RadioButton_Checked"/>
+                                 Checked="RadioButton_Checked"/>
                     <RadioButton x:Name="TenMinuteAutoRefreshRadioButton" Content="10 分钟"
-                                 Tag="10" Checked="RadioButton_Checked"/>
+                                 Checked="RadioButton_Checked"/>
                     <RadioButton x:Name="CustomMinuteAutoRefreshRadioButton"
                                  Checked="RadioButton_Checked">
                         <StackPanel Orientation="Horizontal">
@@ -44,7 +46,7 @@
                                        PlaceholderText="自定义刷新间隔" Width="150"
                                        SpinButtonPlacementMode="Compact" SmallChange="1"
                                        ValidationMode="InvalidInputOverwritten" Value="20"
-                                       Minimum="5" Maximum="60" ValueChanged="CustomMinuteAutoRefreshNumberBox_ValueChanged"/>
+                                       Minimum="1" Maximum="60" ValueChanged="CustomMinuteAutoRefreshNumberBox_ValueChanged"/>
                         </StackPanel>
                     </RadioButton>
                 </RadioButtons>

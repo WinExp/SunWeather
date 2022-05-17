@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using EasyUpdate;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using QWeatherAPI.Result.GeoAPI.CityLookup;
 using SunWeather_WinUI3.Class;
@@ -7,6 +8,7 @@ using SunWeather_WinUI3.Views.Pages;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using WinUIEx;
@@ -23,7 +25,6 @@ namespace SunWeather_WinUI3
     {
         private Dictionary<string, Location> locationDictionary = new Dictionary<string, Location>();
         private ObservableCollection<string> locationName = new ObservableCollection<string>();
-        private double scalingFactor;
         internal static HomePage homePage;
         internal static SearchPage searchPage;
 
@@ -34,23 +35,42 @@ namespace SunWeather_WinUI3
             SearchPage.mainWindow = this;
             this.SetIcon("Assets/App_Icon_Content_64.ico");
             this.SearchLocationAutoSuggestBox.ItemsSource = locationName;
+            CheckUpdateAsync();
             Configs.LoadConfig();
-            //DPIAdapted();
         }
 
-        private ICommand OpenSettingPageCommand
+        private async Task CheckUpdateAsync()
         {
-            get
+            var updateInfo = await Updater.GetUpdateInfoAsync("https://we-bucket.oss-cn-shenzhen.aliyuncs.com/App/Test/updateInfo.xml");
+            if (updateInfo.IsUpdateAvailable)
             {
-                return new ICommandBase
+                ContentDialog contentDialog = new ContentDialog
                 {
-                    CommandAction = () =>
-                    {
-                        PageContentFrame.Navigate(typeof(SettingPage));
-                        MainNavigationView.IsPaneOpen = false;
-                    }
+                    Title = "更新可用",
+                    Content = $"Sun Weather {updateInfo.Version} 版本可用。您正在使用 {Assembly.GetEntryAssembly().GetName().Version}，请问是否要更新？",
+                    PrimaryButtonText = "更新",
+                    CloseButtonText = "下次再说",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = this.Content.XamlRoot
                 };
+                if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
+                {
+                    await StartUpdateCommand(updateInfo);
+                }
             }
+        }
+
+        private async Task StartUpdateCommand(UpdateInfo updateInfo)
+        {
+            UpdateDialogPage updateDialogPage = new UpdateDialogPage();
+            ContentDialog contentDialog = new ContentDialog
+            {
+                Title = "更新",
+                Content = updateDialogPage,
+                XamlRoot = this.Content.XamlRoot
+            };
+            contentDialog.ShowAsync();
+            await updateDialogPage.UpdateAppAsync(updateInfo);
         }
 
         private async Task<bool> CheckApiKeyAsync(bool showDialog = true)
@@ -90,31 +110,40 @@ namespace SunWeather_WinUI3
             return true;
         }
 
-        private void DPIAdapted()
+        private ICommand OpenSettingPageCommand
         {
-            int dpi = (int)this.GetDpiForWindow();
-            scalingFactor = dpi / 96;
+            get
+            {
+                return new ICommandBase
+                {
+                    CommandAction = () =>
+                    {
+                        PageContentFrame.Navigate(typeof(SettingPage));
+                        MainNavigationView.IsPaneOpen = false;
+                    }
+                };
+            }
         }
 
         private void MainNavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            Type navigationPage;
+            Type navigationPage = typeof(HomePage);
             NavigationViewItem navigationItem = (NavigationViewItem)sender.SelectedItem;
-            if (navigationItem == this.HomePageItem) // 主页
+            if (navigationItem == HomePageItem)
             {
                 navigationPage = typeof(HomePage);
             }
-            else if (navigationItem == this.HelpPageItem) // 帮助页面
+            else if (navigationItem == HelpPageItem)
             {
                 navigationPage = typeof(HelpPage);
             }
-            else if (args.IsSettingsSelected) // 设置页面
+            else if (navigationItem == MorePageItem)
+            {
+                navigationPage = typeof(MorePage);
+            }
+            else if (args.IsSettingsSelected)
             {
                 navigationPage = typeof(SettingPage);
-            }
-            else
-            {
-                navigationPage = typeof(HomePage);
             }
             this.PageContentFrame.Navigate(navigationPage, null, args.RecommendedNavigationTransitionInfo);
         }
@@ -122,8 +151,10 @@ namespace SunWeather_WinUI3
         internal async void SearchPage_LocationListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListView listView = sender as ListView;
+            HomePage.CustomLocation = true;
             this.PageContentFrame.Navigate(typeof(HomePage));
             await homePage.QueryWeatherAsync(searchPage.locationDictionary[listView.SelectedItem.ToString()]);
+            HomePage.CustomLocation = false;
         }
 
         private async void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

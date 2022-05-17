@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -18,6 +19,9 @@ namespace SunWeather_WinUI3.Views.Pages
         public HelpPage()
         {
             this.InitializeComponent();
+
+            VersionTextBlock.Text = $"Sun Weather {Assembly.GetEntryAssembly().GetName().Version.ToString()}";
+
             projectsDictionary.Add("Windows UI Library", "https://github.com/microsoft/microsoft-ui-xaml");
             projectsDictionary.Add("Windows App SDK", "https://github.com/microsoft/WindowsAppSDK");
             projectsDictionary.Add("QWeather", "https://www.qweather.com/");

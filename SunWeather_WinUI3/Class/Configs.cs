@@ -53,7 +53,7 @@ namespace SunWeather_WinUI3.Class
                     ApiKey = key == "" ? DefaultApiKey : key;
 
                     int delay = int.Parse(configLoader.GetValue("AutoRefreshDelay"));
-                    if (delay > 60 || delay < 5)
+                    if (delay > 60 || delay <= 0 && delay != -1)
                     {
                         throw new FileLoadException();
                     }

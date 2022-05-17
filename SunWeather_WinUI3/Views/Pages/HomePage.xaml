@@ -49,8 +49,8 @@
                 <Frame.Content>
                     <StackPanel Orientation="Vertical"
                                 HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <Border CornerRadius="20" Width="670" Height="230"
-                                Background="{ThemeResource CardBrush}">
+                        <Border CornerRadius="20" Width="670" Height="230" HorizontalAlignment="Left"
+                                Background="{ThemeResource SystemControlAcrylicElementBrush}">
                             <StackPanel Orientation="Horizontal" Margin="35,30,0,0">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock x:Name="WeatherTitleTextBlock" FontSize="35"
@@ -61,40 +61,65 @@
                                                 <ScalarTransition/>
                                             </Image.OpacityTransition>
                                         </Image>
-                                        <StackPanel Orientation="Vertical" Margin="15,0,0,0">
-                                            <TextBlock x:Name="TempTextBlock" FontSize="25"/>
+                                        <StackPanel Orientation="Vertical" Margin="15,-5,0,0">
+                                            <TextBlock x:Name="TempTextBlock" FontSize="35"/>
                                             <TextBlock x:Name="WeatherDescriptionTextBlock" FontSize="20"/>
-                                            <TextBlock x:Name="MaxMinTempTextBlock" FontSize="20"/>
+                                            <TextBlock x:Name="MaxMinTempTextBlock" FontSize="20" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
-                        <Border CornerRadius="20" Width="670" Height="210"
-                                Background="{ThemeResource CardBrush}" Margin="0,20,0,0">
-                            <StackPanel Orientation="Horizontal" Margin="35,30,0,0">
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock FontSize="35" FontWeight="Bold">日出日落</TextBlock>
-                                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                                        <Image Source="ms-appx:///Assets/Seniverse/Icon/0@1x.png"
-                                           Width="30" Height="30" Margin="0,5,10,0"/>
-                                        <TextBlock x:Name="SunriseTextBlock" FontSize="25"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                        <Image Source="ms-appx:///Assets/Seniverse/Icon/1@1x.png"
-                                           Width="30" Height="30" Margin="0,5,10,0"/>
-                                        <TextBlock x:Name="SunsetTextBlock" FontSize="25"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Left">
+                            <Border CornerRadius="20" Width="220" Height="210"
+                                    Background="{ThemeResource SystemControlAcrylicElementBrush}">
+                                <StackPanel Orientation="Horizontal" Margin="30,30,0,0">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock FontSize="35" FontWeight="Bold">日出日落</TextBlock>
+                                        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                                            <Image Source="ms-appx:///Assets/Seniverse/Icon/0@1x.png"
+                                                   Width="30" Height="30" Margin="0,5,10,0"/>
+                                            <TextBlock x:Name="SunriseTextBlock" FontSize="25"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                            <Image Source="ms-appx:///Assets/Seniverse/Icon/1@1x.png"
+                                                   Width="30" Height="30" Margin="0,5,10,0"/>
+                                            <TextBlock x:Name="SunsetTextBlock" FontSize="25"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
-                                <StackPanel Orientation="Vertical" Margin="25,55,0,0">
-                                    <TextBlock x:Name="WindDirTextBlock" FontSize="20" Margin="0,15,0,0"/>
-                                    <TextBlock x:Name="FeelsLikeTempTextBlock" FontSize="20"
-                                           Margin="0,5,0,0"/>
+                            </Border>
+                            <Border CornerRadius="20" Width="200" Height="210"
+                                    Background="{ThemeResource SystemControlAcrylicElementBrush}" Margin="25,0,0,0">
+                                <StackPanel Orientation="Vertical" Margin="30,30,0,0">
+                                    <TextBlock FontSize="35" FontWeight="Bold">今日指数</TextBlock>
+                                    <TextBlock x:Name="FeelsLikeTempTextBlock" FontSize="20" Margin="0,15,0,0"/>
+                                    <TextBlock x:Name="WindScaleTextBlock" FontSize="20" Margin="0,5,0,0"/>
+                                    <TextBlock x:Name="WindDirTextBlock" FontSize="20" Margin="0,5,0,0"/>
                                 </StackPanel>
+                            </Border>
+                            <Border CornerRadius="20" Width="200" Height="210"
+                                    Background="{ThemeResource SystemControlAcrylicElementBrush}" Margin="25,0,0,0">
+                                <StackPanel Orientation="Vertical" Margin="30,30,0,0">
+                                    <TextBlock FontSize="35" FontWeight="Bold">今日诗词</TextBlock>
+                                    <TextBlock x:Name="ShiciTextBlock" FontSize="20" Margin="-17,20,0,0"
+                                               TextWrapping="Wrap" Width="160"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        <Border CornerRadius="20" Width="670" Height="230" x:Name="WeatherWarningBorder" HorizontalAlignment="Left"
+                                Background="{ThemeResource SystemControlAcrylicElementBrush}" Margin="0,20,0,0">
+                            <StackPanel Orientation="Vertical" Margin="35,30,0,0">
+                                <TextBlock FontSize="35" FontWeight="Bold">天气预警</TextBlock>
+                                <ScrollViewer Height="125" Width="605" Margin="0,25,0,0"
+                                              HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Disabled"
+                                              HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <StackPanel x:Name="WeatherWarningStackPanel" Orientation="Horizontal"/>
+                                </ScrollViewer>
                             </StackPanel>
                         </Border>
-                        <Border CornerRadius="20" Width="670" Height="230"
-                                Background="{ThemeResource CardBrush}" Margin="0,20,0,0">
+                        <Border CornerRadius="20" Width="670" Height="230" HorizontalAlignment="Left"
+                                Background="{ThemeResource SystemControlAcrylicElementBrush}" Margin="0,20,0,0">
                             <StackPanel Orientation="Vertical" Margin="35,30,0,0">
                                 <TextBlock FontSize="35" FontWeight="Bold">7 天预报</TextBlock>
                                 <ScrollViewer Height="125" Width="605" Margin="0,25,0,0"

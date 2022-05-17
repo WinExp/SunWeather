@@ -16,6 +16,7 @@
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Name="HomePageItem" Icon="Home" Content="主页"/>
                 <NavigationViewItem x:Name="HelpPageItem" Icon="Help" Content="帮助 &amp; 关于"/>
+                <NavigationViewItem x:Name="MorePageItem" Icon="ViewAll" Content="更多"/>
             </NavigationView.MenuItems>
 
             <NavigationView.AutoSuggestBox>

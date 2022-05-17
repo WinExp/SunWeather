@@ -49,8 +49,8 @@ namespace SunWeather_WinUI3.Views.Pages
             }
             string[] queryLocation = cutLocation.Split(',');
             GeoResult geoResult = queryLocation.Length > 1 ?
-                    await QWeatherAPI.GeoAPI.GetGeoAsync(queryLocation[queryLocation.Length - 1], "c94fcc66ea614293953be7687537ba91", adm: queryLocation[queryLocation.Length - 2], limit: 20) :
-                    await QWeatherAPI.GeoAPI.GetGeoAsync(queryLocation[queryLocation.Length - 1], "c94fcc66ea614293953be7687537ba91", limit: 20);
+                    await QWeatherAPI.GeoAPI.GetGeoAsync(queryLocation[queryLocation.Length - 1], Configs.ApiKey, adm: queryLocation[queryLocation.Length - 2], limit: 20) :
+                    await QWeatherAPI.GeoAPI.GetGeoAsync(queryLocation[queryLocation.Length - 1], Configs.ApiKey, limit: 20);
             locationDictionary.Clear();
             foreach (Location location in geoResult.Locations)
             {

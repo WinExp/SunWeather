@@ -48,7 +48,11 @@ namespace SunWeather_WinUI3.Views.Pages
                 }
 
                 int refreshDelay = Configs.AutoRefreshDelay;
-                if (refreshDelay == 5)
+                if (refreshDelay == -1)
+                {
+                    OffAutoRefreshRadioButton.IsChecked = true;
+                }
+                else if (refreshDelay == 5)
                 {
                     FiveMinuteAutoRefreshRadioButton.IsChecked = true;
                 }
@@ -81,7 +85,11 @@ namespace SunWeather_WinUI3.Views.Pages
                 unit = Units.Inch;
             }
 
-            if ((bool)FiveMinuteAutoRefreshRadioButton.IsChecked)
+            if ((bool)OffAutoRefreshRadioButton.IsChecked)
+            {
+                delay = -1;
+            }
+            else if ((bool)FiveMinuteAutoRefreshRadioButton.IsChecked)
             {
                 delay = 5;
             }
@@ -165,7 +173,11 @@ namespace SunWeather_WinUI3.Views.Pages
                 }
 
                 string delay;
-                if ((bool)FiveMinuteAutoRefreshRadioButton.IsChecked)
+                if ((bool)OffAutoRefreshRadioButton.IsChecked)
+                {
+                    delay = "-1";
+                }
+                else if ((bool)FiveMinuteAutoRefreshRadioButton.IsChecked)
                 {
                     delay = "5";
                 }

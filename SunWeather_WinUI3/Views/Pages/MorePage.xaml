@@ -1,0 +1,27 @@
+﻿<Page
+    x:Class="SunWeather_WinUI3.Views.Pages.MorePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SunWeather_WinUI3.Views.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="30,30,0,0">
+            <TextBlock FontSize="30" FontWeight="Bold">更多</TextBlock>
+            <Border x:Name="MessageBorder" CornerRadius="10" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+                    Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="300" Height="150"
+                    PointerEntered="MessageBorder_PointerEntered" PointerExited="MessageBorder_PointerExited" PointerReleased="MessageBorder_PointerReleased"
+                    HorizontalAlignment="Left" Margin="0,30,0,0">
+                <StackPanel Orientation="Vertical" Margin="30,25,0,0">
+                    <TextBlock FontSize="30" FontWeight="Bold">回声洞</TextBlock>
+                    <ProgressRing x:Name="MessageLoadingProgressRing" IsActive="False" Visibility="Collapsed"
+                                  Margin="-25,25,0,0"/>
+                    <TextBlock x:Name="MessageTextBlock" FontSize="15" TextWrapping="Wrap"
+                               Margin="0,20,0,0" Width="250" HorizontalAlignment="Left">点击此处查看网友们的留言！</TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Page>
