@@ -41,7 +41,7 @@ namespace SunWeather_WinUI3
 
         private async Task CheckUpdateAsync()
         {
-            var updateInfo = await Updater.GetUpdateInfoAsync("https://we-bucket.oss-cn-shenzhen.aliyuncs.com/App/Test/updateInfo.xml");
+            var updateInfo = await Updater.GetUpdateInfoAsync("https://we-bucket.oss-cn-shenzhen.aliyuncs.com/Project/Download/SunWeather/Update/updateInfo.xml");
             if (updateInfo.IsUpdateAvailable)
             {
                 ContentDialog contentDialog = new ContentDialog
@@ -55,12 +55,12 @@ namespace SunWeather_WinUI3
                 };
                 if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
                 {
-                    await StartUpdateCommand(updateInfo);
+                    await StartUpdateAsync(updateInfo);
                 }
             }
         }
 
-        private async Task StartUpdateCommand(UpdateInfo updateInfo)
+        private async Task StartUpdateAsync(UpdateInfo updateInfo)
         {
             UpdateDialogPage updateDialogPage = new UpdateDialogPage();
             ContentDialog contentDialog = new ContentDialog
