@@ -11,7 +11,7 @@
         <StackPanel Orientation="Vertical" Margin="30,30,0,0">
             <TextBlock FontSize="30" FontWeight="Bold">更多</TextBlock>
             <Border x:Name="MessageBorder" CornerRadius="10" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
-                    Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="300" Height="150"
+                    Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="300" Height="125"
                     PointerEntered="MessageBorder_PointerEntered" PointerExited="MessageBorder_PointerExited" PointerReleased="MessageBorder_PointerReleased"
                     HorizontalAlignment="Left" Margin="0,30,0,0">
                 <StackPanel Orientation="Vertical" Margin="30,25,0,0">
