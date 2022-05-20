@@ -14,8 +14,8 @@
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <AssemblyName>Sun Weather</AssemblyName>
     <ApplicationIcon>Assets\App_Icon_Content_64.ico</ApplicationIcon>
-    <AssemblyVersion>1.1.0.*</AssemblyVersion>
-    <FileVersion>1.1.0.*</FileVersion>
+    <AssemblyVersion>1.1.1.*</AssemblyVersion>
+    <FileVersion>1.1.1.*</FileVersion>
 	<Deterministic>False</Deterministic>
 	<UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
