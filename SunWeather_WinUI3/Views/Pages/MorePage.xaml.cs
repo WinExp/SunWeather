@@ -28,6 +28,7 @@ namespace SunWeather_WinUI3.Views.Pages
         private const string messagesUrl = "https://we-bucket.oss-cn-shenzhen.aliyuncs.com/Project/Download/SunWeather/Messages/messages.txt";
         private bool isMessageLoading = false;
         private string[] messages;
+        private List<string> loadedMessages = new List<string>();
 
         public MorePage()
         {
@@ -64,12 +65,18 @@ namespace SunWeather_WinUI3.Views.Pages
                 isLoad = true;
             }
             Random random = new Random(Guid.NewGuid().GetHashCode());
-            int messageIndex = random.Next(messages.Length);
-            while (messageIndex == Array.IndexOf(messages, MessageTextBlock.Text))
-            {
-                messageIndex = random.Next(messages.Length);
-            }
+            int messageIndex = random.Next(messages.Length - 1);
             string message = messages[messageIndex];
+            if (messages.Length == loadedMessages.Count)
+            {
+                loadedMessages.Clear();
+            }
+            while (loadedMessages.Contains(message))
+            {
+                messageIndex = random.Next(messages.Length - 1);
+                message = messages[messageIndex];
+            }
+            loadedMessages.Add(message);
             if (!isLoad)
             {
                 for (int i = 0; i < random.Next(3, 5); i++)
@@ -85,6 +92,7 @@ namespace SunWeather_WinUI3.Views.Pages
             foreach (char c in message)
             {
                 MessageTextBlock.Text += c;
+                MessageBorder.Height = MessageTextBlock.ActualHeight > 55 ? MessageTextBlock.ActualHeight + 105 : 150;
                 await Task.Delay(40);
             }
             isMessageLoading = false;
