@@ -36,8 +36,9 @@ namespace SunWeather_WinUI3.Views.Pages
             var downloadInfo = await Updater.DownloadUpdate(updateInfo);
             while (!downloadInfo.IsCompleted)
             {
-                UpdateProgressPercentProgressBar.Value = downloadInfo.DownloadedDataPercent;
+                UpdateProgressPercentProgressBar.Value = Math.Ceiling(downloadInfo.DownloadedDataPercent);
                 UpdateProgressPercentTextBlock.Text = Math.Ceiling(downloadInfo.DownloadedDataPercent) + "%";
+                await Task.Delay(500);
             }
             UpdateProgressPercentTextBlock.Text = "已完成";
             for (int i = 5; i >= 0; i--)

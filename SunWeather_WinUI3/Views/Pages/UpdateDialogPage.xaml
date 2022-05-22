@@ -12,7 +12,7 @@
             <TextBlock x:Name="UpdateStatusTextBlock" HorizontalAlignment="Center" HorizontalTextAlignment="Center"/>
             <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
                 <ProgressBar x:Name="UpdateProgressPercentProgressBar"
-                         HorizontalAlignment="Left" Width="130"/>
+                             HorizontalAlignment="Left" Width="130"/>
                 <TextBlock x:Name="UpdateProgressPercentTextBlock" Margin="10,0,0,0">0%</TextBlock>
             </StackPanel>
         </StackPanel>
