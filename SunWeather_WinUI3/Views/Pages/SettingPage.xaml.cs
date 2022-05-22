@@ -27,6 +27,7 @@ namespace SunWeather_WinUI3.Views.Pages
     /// </summary>
     public sealed partial class SettingPage : Page
     {
+        internal static MainWindow mainWindow;
 
         public SettingPage()
         {
@@ -65,6 +66,8 @@ namespace SunWeather_WinUI3.Views.Pages
                     CustomMinuteAutoRefreshRadioButton.IsChecked = true;
                     CustomMinuteAutoRefreshNumberBox.Text = refreshDelay.ToString();
                 }
+
+                AutoUpdateToggleSwitch.IsOn = Configs.IsAutoUpdate;
             };
         }
 
@@ -103,9 +106,10 @@ namespace SunWeather_WinUI3.Views.Pages
             }
 
             string key = ApiKeyPasswordBox.Password == "" ? Configs.DefaultApiKey : ApiKeyPasswordBox.Password;
-            if (key != Configs.ApiKey ||
-                unit != Configs.Unit ||
-                delay != Configs.AutoRefreshDelay)
+            if (key != Configs.ApiKey
+                || unit != Configs.Unit
+                || delay != Configs.AutoRefreshDelay
+                || AutoUpdateToggleSwitch.IsOn != Configs.IsAutoUpdate)
             {
                 SaveConfigButton.Opacity = 1;
                 return;
@@ -192,10 +196,21 @@ namespace SunWeather_WinUI3.Views.Pages
 
                 configWriter.SetConfigValue("Unit", radioButton.Tag.ToString());
                 configWriter.SetConfigValue("AutoRefreshDelay", delay);
+                configWriter.SetConfigValue("isAutoUpdate", AutoUpdateToggleSwitch.IsOn.ToString());
                 configWriter.WriteInFile();
             }
             Configs.LoadConfig();
             UpdateSaveButtonStatus();
+        }
+
+        private void AutoUpdateToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            UpdateSaveButtonStatus();
+        }
+
+        private async void CheckUpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            await mainWindow.CheckUpdateAsync();
         }
     }
 }

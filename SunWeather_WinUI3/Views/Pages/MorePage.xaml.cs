@@ -27,7 +27,7 @@ namespace SunWeather_WinUI3.Views.Pages
     {
         private const string messagesUrl = "https://we-bucket.oss-cn-shenzhen.aliyuncs.com/Project/Download/SunWeather/Messages/messages.txt";
         private bool isMessageLoading = false;
-        private string[] messages;
+        private List<string> messages = new List<string>();
         private List<string> loadedMessages = new List<string>();
 
         public MorePage()
@@ -47,36 +47,43 @@ namespace SunWeather_WinUI3.Views.Pages
 
         private async void MessageBorder_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (isMessageLoading)
-            {
-                return;
-            }
-            isMessageLoading = true;
             bool isLoad = false;
-            if (messages == null)
+            async Task loadMessages()
             {
                 MessageLoadingProgressRing.Visibility = Visibility.Visible;
                 MessageLoadingProgressRing.IsActive = true;
                 MessageTextBlock.Visibility = Visibility.Collapsed;
-                messages = (await WebRequests.GetStringAsync(messagesUrl)).Split('\n');
+                messages = (await WebRequests.GetStringAsync(messagesUrl)).Split('\n').ToList();
                 MessageLoadingProgressRing.IsActive = false;
                 MessageLoadingProgressRing.Visibility = Visibility.Collapsed;
                 MessageTextBlock.Visibility = Visibility.Visible;
                 isLoad = true;
             }
+
+            if (isMessageLoading)
+            {
+                return;
+            }
+            isMessageLoading = true;
+            if (messages.Count == 0)
+            {
+                await loadMessages();
+            }
             Random random = new Random(Guid.NewGuid().GetHashCode());
-            int messageIndex = random.Next(messages.Length - 1);
+            int messageIndex = random.Next(messages.Count - 1);
             string message = messages[messageIndex];
-            if (messages.Length == loadedMessages.Count)
+            if (messages.Count == loadedMessages.Count)
             {
                 loadedMessages.Clear();
+                await loadMessages();
             }
             while (loadedMessages.Contains(message))
             {
-                messageIndex = random.Next(messages.Length - 1);
+                messageIndex = random.Next(messages.Count - 1);
                 message = messages[messageIndex];
             }
             loadedMessages.Add(message);
+            messages.Remove(message);
             if (!isLoad)
             {
                 for (int i = 0; i < random.Next(3, 5); i++)
@@ -92,9 +99,10 @@ namespace SunWeather_WinUI3.Views.Pages
             foreach (char c in message)
             {
                 MessageTextBlock.Text += c;
-                MessageBorder.Height = MessageTextBlock.ActualHeight > 55 ? MessageTextBlock.ActualHeight + 105 : 150;
+                MessageBorder.Height = Math.Ceiling(MessageTextBlock.ActualHeight) + 105;
                 await Task.Delay(40);
             }
+            MessageBorder.Height = Math.Ceiling(MessageTextBlock.ActualHeight) + 105;
             isMessageLoading = false;
         }
     }

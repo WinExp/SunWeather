@@ -102,8 +102,8 @@
                                     Background="{ThemeResource SystemControlAcrylicElementBrush}" Margin="25,0,0,0">
                                 <StackPanel Orientation="Vertical" Margin="30,30,0,0">
                                     <TextBlock FontSize="35" FontWeight="Bold">今日诗词</TextBlock>
-                                    <TextBlock x:Name="ShiciTextBlock" FontSize="20" Margin="-17,20,0,0"
-                                               TextWrapping="Wrap" Width="160"/>
+                                    <TextBlock x:Name="ShiciTextBlock" FontSize="20" Margin="-27,20,0,0"
+                                               TextWrapping="Wrap" Width="140"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>

@@ -11,6 +11,7 @@ namespace SunWeather_WinUI3.Class
         internal static QWeatherAPI.Tools.Units Unit;
         internal static string ApiKey;
         internal static int AutoRefreshDelay;
+        internal static bool IsAutoUpdate;
 
         // 读取配置文件
         internal static void LoadConfig()
@@ -23,6 +24,7 @@ namespace SunWeather_WinUI3.Class
                     configWriter.SetConfigValue("Unit", "Metric");
                     configWriter.SetConfigValue("ApiKey", "");
                     configWriter.SetConfigValue("AutoRefreshDelay", "5");
+                    configWriter.SetConfigValue("isAutoUpdate", "True");
                     configWriter.WriteInFile();
                 }
             }
@@ -58,6 +60,8 @@ namespace SunWeather_WinUI3.Class
                         throw new FileLoadException();
                     }
                     AutoRefreshDelay = delay;
+
+                    IsAutoUpdate = bool.Parse(configLoader.GetValue("isAutoUpdate"));
                 }
             }
             catch

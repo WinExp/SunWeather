@@ -14,10 +14,11 @@
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <AssemblyName>Sun Weather</AssemblyName>
     <ApplicationIcon>Assets\App_Icon_Content_64.ico</ApplicationIcon>
-    <AssemblyVersion>1.1.2.*</AssemblyVersion>
-    <FileVersion>1.1.2.*</FileVersion>
+    <AssemblyVersion>1.1.3.*</AssemblyVersion>
+    <FileVersion>1.1.3.*</FileVersion>
 	<Deterministic>False</Deterministic>
 	<UseWindowsForms>False</UseWindowsForms>
+	<Version>1.1.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,7 +43,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.3" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.197" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="QWeatherAPI" Version="1.3.2" />
+    <PackageReference Include="QWeatherAPI" Version="1.3.3" />
     <PackageReference Include="System.Management" Version="6.0.0" />
     <PackageReference Include="WinUIEx" Version="1.4.2" />
     <Manifest Include="$(ApplicationManifest)" />

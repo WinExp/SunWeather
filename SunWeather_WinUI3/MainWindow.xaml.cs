@@ -25,6 +25,7 @@ namespace SunWeather_WinUI3
     {
         private Dictionary<string, Location> locationDictionary = new Dictionary<string, Location>();
         private ObservableCollection<string> locationName = new ObservableCollection<string>();
+        private static bool isUpdateChecked = false;
         internal static HomePage homePage;
         internal static SearchPage searchPage;
 
@@ -33,13 +34,21 @@ namespace SunWeather_WinUI3
             // 初始化窗口
             this.InitializeComponent();
             SearchPage.mainWindow = this;
+            SettingPage.mainWindow = this;
             this.SetIcon("Assets/App_Icon_Content_64.ico");
             this.SearchLocationAutoSuggestBox.ItemsSource = locationName;
-            CheckUpdateAsync();
             Configs.LoadConfig();
+            this.Activated += async delegate
+            {
+                if (Configs.IsAutoUpdate && !isUpdateChecked)
+                {
+                    isUpdateChecked = true;
+                    await CheckUpdateAsync();
+                }
+            };
         }
 
-        private async Task CheckUpdateAsync()
+        internal async Task CheckUpdateAsync()
         {
             var updateInfo = await Updater.GetUpdateInfoAsync("https://we-bucket.oss-cn-shenzhen.aliyuncs.com/Project/Download/SunWeather/Update/updateInfo.xml");
             if (updateInfo.IsUpdateAvailable)
