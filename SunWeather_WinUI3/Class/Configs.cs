@@ -12,6 +12,7 @@ namespace SunWeather_WinUI3.Class
         internal static string ApiKey;
         internal static int AutoRefreshDelay;
         internal static bool IsAutoUpdate;
+        internal static bool IsTray;
 
         // 读取配置文件
         internal static void LoadConfig()
@@ -24,7 +25,8 @@ namespace SunWeather_WinUI3.Class
                     configWriter.SetConfigValue("Unit", "Metric");
                     configWriter.SetConfigValue("ApiKey", "");
                     configWriter.SetConfigValue("AutoRefreshDelay", "5");
-                    configWriter.SetConfigValue("isAutoUpdate", "True");
+                    configWriter.SetConfigValue("IsAutoUpdate", "True");
+                    configWriter.SetConfigValue("IsTray", "True");
                     configWriter.WriteInFile();
                 }
             }
@@ -61,7 +63,9 @@ namespace SunWeather_WinUI3.Class
                     }
                     AutoRefreshDelay = delay;
 
-                    IsAutoUpdate = bool.Parse(configLoader.GetValue("isAutoUpdate"));
+                    IsAutoUpdate = bool.Parse(configLoader.GetValue("IsAutoUpdate"));
+
+                    IsTray = bool.Parse(configLoader.GetValue("IsTray"));
                 }
             }
             catch
@@ -71,10 +75,12 @@ namespace SunWeather_WinUI3.Class
                     WriteDefaultConfig();
                     LoadConfig();
                 }
-                catch { }
-                Unit = QWeatherAPI.Tools.Units.Metric;
-                ApiKey = DefaultApiKey;
-                AutoRefreshDelay = 5;
+                catch
+                {
+                    Unit = QWeatherAPI.Tools.Units.Metric;
+                    ApiKey = DefaultApiKey;
+                    AutoRefreshDelay = 5;
+                }
             }
         }
     }

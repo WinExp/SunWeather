@@ -17,7 +17,7 @@
                 <StackPanel Orientation="Vertical" Margin="30,25,0,0">
                     <TextBlock FontSize="30" FontWeight="Bold">回声洞</TextBlock>
                     <ProgressRing x:Name="MessageLoadingProgressRing" IsActive="False" Visibility="Collapsed"
-                                  Margin="-25,15,0,0"/>
+                                  Margin="-25,10,0,0"/>
                     <TextBlock x:Name="MessageTextBlock" FontSize="15" TextWrapping="Wrap"
                                Margin="0,15,0,0" Width="250" HorizontalAlignment="Left"
                                VerticalAlignment="Top">点击此处查看网友们的留言！</TextBlock>

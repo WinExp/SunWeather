@@ -36,8 +36,6 @@ namespace SunWeather_WinUI3.Views.Pages
             // 按照配置文件更改控件状态
             this.Loaded += delegate
             {
-                ApiKeyPasswordBox.Password = Configs.ApiKey == Configs.DefaultApiKey ? "" : Configs.ApiKey;
-
                 switch (Configs.Unit)
                 {
                     case Units.Metric:
@@ -47,6 +45,8 @@ namespace SunWeather_WinUI3.Views.Pages
                         InchRadioButton.IsChecked = true;
                         break;
                 }
+
+                ApiKeyPasswordBox.Password = Configs.ApiKey == Configs.DefaultApiKey ? "" : Configs.ApiKey;
 
                 int refreshDelay = Configs.AutoRefreshDelay;
                 if (refreshDelay == -1)
@@ -68,6 +68,7 @@ namespace SunWeather_WinUI3.Views.Pages
                 }
 
                 AutoUpdateToggleSwitch.IsOn = Configs.IsAutoUpdate;
+                TrayToggleSwitch.IsOn = Configs.IsTray;
             };
         }
 
@@ -109,7 +110,8 @@ namespace SunWeather_WinUI3.Views.Pages
             if (key != Configs.ApiKey
                 || unit != Configs.Unit
                 || delay != Configs.AutoRefreshDelay
-                || AutoUpdateToggleSwitch.IsOn != Configs.IsAutoUpdate)
+                || AutoUpdateToggleSwitch.IsOn != Configs.IsAutoUpdate
+                || TrayToggleSwitch.IsOn != Configs.IsTray)
             {
                 SaveConfigButton.Opacity = 1;
                 return;
@@ -164,8 +166,6 @@ namespace SunWeather_WinUI3.Views.Pages
 
             using (ConfigWriter configWriter = new ConfigWriter(Configs.ConfigFilePath))
             {
-                configWriter.SetConfigValue("ApiKey", ApiKeyPasswordBox.Password == "" ? Configs.DefaultApiKey : ApiKeyPasswordBox.Password);
-
                 RadioButton radioButton;
                 if ((bool)MetricRadioButton.IsChecked)
                 {
@@ -195,8 +195,10 @@ namespace SunWeather_WinUI3.Views.Pages
                 }
 
                 configWriter.SetConfigValue("Unit", radioButton.Tag.ToString());
+                configWriter.SetConfigValue("ApiKey", ApiKeyPasswordBox.Password == "" ? Configs.DefaultApiKey : ApiKeyPasswordBox.Password);
                 configWriter.SetConfigValue("AutoRefreshDelay", delay);
-                configWriter.SetConfigValue("isAutoUpdate", AutoUpdateToggleSwitch.IsOn.ToString());
+                configWriter.SetConfigValue("IsAutoUpdate", AutoUpdateToggleSwitch.IsOn.ToString());
+                configWriter.SetConfigValue("IsTray", TrayToggleSwitch.IsOn.ToString());
                 configWriter.WriteInFile();
             }
             Configs.LoadConfig();
@@ -204,6 +206,11 @@ namespace SunWeather_WinUI3.Views.Pages
         }
 
         private void AutoUpdateToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            UpdateSaveButtonStatus();
+        }
+
+        private void TraySwitch_Toggled(object sender, RoutedEventArgs e)
         {
             UpdateSaveButtonStatus();
         }

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using WinUIEx;
 
@@ -25,7 +26,9 @@ namespace SunWeather_WinUI3
     {
         private Dictionary<string, Location> locationDictionary = new Dictionary<string, Location>();
         private ObservableCollection<string> locationName = new ObservableCollection<string>();
-        private static bool isUpdateChecked = false;
+        private bool isUpdateChecked = false;
+        private bool isTrayExit = false;
+        private bool isFirstClose = true;
         internal static HomePage homePage;
         internal static SearchPage searchPage;
 
@@ -46,6 +49,59 @@ namespace SunWeather_WinUI3
                     await CheckUpdateAsync();
                 }
             };
+            LoadTray();
+        }
+
+        private void LoadTray()
+        {
+            var notifyIcon = NotifyIcon.Create();
+            string version = Assembly.GetEntryAssembly().GetName().Version.ToString();
+            notifyIcon.Text = $@"Sun Weather
+Release {version.Remove(version.LastIndexOf('.'))}";
+            notifyIcon.Icon = "Assets\\App_Icon_Content_64.ico";
+            notifyIcon.Click += delegate
+            {
+                this.Show();
+                this.BringToFront();
+            };
+            notifyIcon.ContextMenuStrip.Items.Add(new ContextMenuStrip.MenuItem
+            {
+                Text = "退出应用",
+                Command = ExitCommand
+            });
+
+            this.Closed += (s, e) =>
+            {
+                if (isTrayExit || !Configs.IsTray)
+                {
+                    notifyIcon.Dispose();
+                }
+                else
+                {
+                    this.Hide();
+                    if (isFirstClose)
+                    {
+                        notifyIcon.ShowBalloonTip("提示", "Sun Weather 已最小化至托盘。", ToolTipIcon.Info);
+                        isFirstClose = false;
+                    }
+                    e.Handled = true;
+                }
+            };
+        }
+
+        private ICommand ExitCommand
+        {
+            get
+            {
+                return new ICommandBase
+                {
+                    CommandAction = () =>
+                    {
+                        isTrayExit = true;
+                        App.Current.Exit();
+                    }
+                };
+            }
         }
 
         internal async Task CheckUpdateAsync()

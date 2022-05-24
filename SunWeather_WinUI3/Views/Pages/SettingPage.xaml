@@ -57,6 +57,10 @@
                     <ToggleSwitch x:Name="AutoUpdateToggleSwitch" Margin="0,5,0,0" Toggled="AutoUpdateToggleSwitch_Toggled"/>
                     <Button Click="CheckUpdateButton_Click" Margin="0,5,0,0">检查更新</Button>
                 </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+                    <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold">托盘</TextBlock>
+                    <ToggleSwitch x:Name="TrayToggleSwitch" Margin="0,5,0,0" Toggled="TraySwitch_Toggled"/>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
         <Button x:Name="SaveConfigButton" Content="保存" Style="{ThemeResource AccentButtonStyle}"

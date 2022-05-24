@@ -20,7 +20,7 @@ namespace SunWeather_WinUI3
         public App()
         {
             this.InitializeComponent();
-            SetupExceptionProcess();
+            this.UnhandledException += UnhandledExceptionProcess;
         }
 
         /// <summary>
@@ -32,13 +32,8 @@ namespace SunWeather_WinUI3
         {
             m_window = new MainWindow();
             m_window.Activate();
-            base.OnLaunched(args);
-        }
 
-        // 错误处理
-        private void SetupExceptionProcess()
-        {
-            this.UnhandledException += UnhandledExceptionProcess;
+            base.OnLaunched(args);
         }
 
         private void UnhandledExceptionProcess(object sender, UnhandledExceptionEventArgs e)
