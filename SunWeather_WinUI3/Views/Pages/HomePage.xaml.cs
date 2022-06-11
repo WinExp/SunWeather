@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Text;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using QWeatherAPI.Result.GeoAPI.CityLookup;
@@ -22,8 +23,8 @@ namespace SunWeather_WinUI3.Views.Pages
     {
         private readonly Dictionary<string, string> qweatherToSeniverseIcon = new Dictionary<string, string>();
         private Location queryLocation;
-        private Task autoRefreshTask;
-        private volatile bool autoRefreshTaskCancel = true;
+        private Location geoLocation;
+        private DateTime? lastQueryWeatherTime;
         internal static bool CustomLocation = false;
 
         public HomePage()
@@ -117,16 +118,13 @@ namespace SunWeather_WinUI3.Views.Pages
                 qweatherToSeniverseIcon.Add(qweatherIcon[i], seniverseIcon[i]);
             }
 
-            autoRefreshTask = new Task(async () =>
+            Task.Run(async () =>
             {
                 while (true)
                 {
-                    if (queryLocation == null || autoRefreshTaskCancel || Configs.AutoRefreshDelay == -1)
-                    {
-                        continue;
-                    }
-                    await Task.Delay(new TimeSpan(0, Configs.AutoRefreshDelay, 0));
-                    if (autoRefreshTaskCancel)
+                    await Task.Delay(1000);
+                    if (lastQueryWeatherTime == null || queryLocation == null || Configs.AutoRefreshDelay == -1
+                    || DateTime.Now - lastQueryWeatherTime < new TimeSpan(0, Configs.AutoRefreshDelay, 0))
                     {
                         continue;
                     }
@@ -134,11 +132,16 @@ namespace SunWeather_WinUI3.Views.Pages
                     {
                         QueryWeatherAsync(queryLocation);
                     });
+                    await Task.Delay(1000);
                 }
             });
-            autoRefreshTask.Start();
 
             GeoIPAsync();
+        }
+
+        internal void ToastWarningCallback()
+        {
+            QueryWeatherAsync(geoLocation);
         }
 
         private async Task GeoIPAsync()
@@ -147,16 +150,11 @@ namespace SunWeather_WinUI3.Views.Pages
 
             try
             {
-                /*string ip = await GetIP.GetIPAsync();
-                var geoIpResult = await GeoIP.QueryGeoIPAsync("50lWG51WTQrGhBEaHYwnM6p2rnP5fIFn", ip);
-
-                var geoResult = geoIpResult.Content.Address_Detail.Province == null ?
-                    await QWeatherAPI.GeoAPI.GetGeoAsync(geoIpResult.Content.Address_Detail.City, Configs.ApiKey) :
-                    await QWeatherAPI.GeoAPI.GetGeoAsync(geoIpResult.Content.Address_Detail.City, Configs.ApiKey, adm: geoIpResult.Content.Address_Detail.Province);*/
                 if (!CustomLocation)
                 {
                     var geoIpResult = await GetGeoIP.GetGeoIPAsync("4db918163480b7772263766d23b5f577");
                     var geoResult = await QWeatherAPI.GeoAPI.GetGeoAsync(geoIpResult.City, Configs.ApiKey, adm: geoIpResult.Province);
+                    geoLocation = geoResult.Locations[0];
                     await QueryWeatherAsync(geoResult.Locations[0]);
                 }
             }
@@ -187,7 +185,6 @@ namespace SunWeather_WinUI3.Views.Pages
             this.SearchLocationTipTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
             this.WeatherInfoFrame.Opacity = 0;
             this.WeatherInfoFrame.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-            autoRefreshTaskCancel = false;
             this.WeatherProgressRing.IsActive = true;
         }
 
@@ -199,7 +196,6 @@ namespace SunWeather_WinUI3.Views.Pages
             RefreshButton.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
             RefreshButton.IsEnabled = false;
             RefreshButton.Opacity = 1;
-            autoRefreshTaskCancel = false;
 
             await Task.Delay(3000);
             RefreshButton.IsEnabled = true;
@@ -207,6 +203,7 @@ namespace SunWeather_WinUI3.Views.Pages
 
         internal async Task QueryWeatherAsync(Location location)
         {
+            queryLocation = location;
             StartLoading();
 
             try
@@ -250,18 +247,75 @@ namespace SunWeather_WinUI3.Views.Pages
 
                 ShiciTextBlock.Text = await ShiciAPI.QueryShiciAPIAsync(await TokenAPI.QueryTokenAsync());
 
-                var dailyforecastWeatherResult =
-                    await QWeatherAPI.WeatherDailyForecastAPI.GetWeatherDailyForecastAsync(location.Lon, location.Lat, Configs.ApiKey, dailyCount: QWeatherAPI.WeatherDailyForecastAPI.DailyCount._7Day);
-                var daily = dailyforecastWeatherResult.Daily[0];
+                var dailyForecastWeatherResult =
+                    await QWeatherAPI.WeatherDailyForecastAPI.GetWeatherDailyForecastAsync(location.Lon, location.Lat, Configs.ApiKey, unit: Configs.Unit, dailyCount: QWeatherAPI.WeatherDailyForecastAPI.DailyCount._7Day);
+                var daily = dailyForecastWeatherResult.Daily[0];
                 SunriseTextBlock.Text = $"{daily.Sunrise} 日出";
                 SunsetTextBlock.Text = $"{daily.Sunset} 日落";
                 MaxMinTempTextBlock.Text = $"最高温 {daily.TempMax}{tempUnit}，最低温 {daily.TempMin}{tempUnit}";
                 WindScaleTextBlock.Text = $"风速 {daily.WindScaleDay.ScaleMin}-{daily.WindScaleDay.ScaleMax} 级";
                 WindDirTextBlock.Text = daily.WindDirDay;
 
+                var hourly = await QWeatherAPI.WeatherHourlyForecastAPI.GetHourlyForecastWeatherAsync(location.Lon, location.Lat, Configs.ApiKey, Configs.Unit);
+                HourlyForecastStackPanel.Children.Clear();
+                for (int i = 0; i < 24; i++)
+                {
+                    Microsoft.UI.Xaml.Thickness stackPanelThickness;
+                    if (i == 0)
+                    {
+                        stackPanelThickness = new Microsoft.UI.Xaml.Thickness();
+                    }
+                    else
+                    {
+                        stackPanelThickness = new Microsoft.UI.Xaml.Thickness(30, 0, 0, 0);
+                    }
+
+                    StackPanel hourlyContent = new StackPanel
+                    {
+                        Orientation = Orientation.Vertical,
+                        Margin = stackPanelThickness
+                    };
+
+                    string imgSource = $"ms-appx:///Assets/Seniverse/Icon/{qweatherToSeniverseIcon[hourly.Hourly[i].Icon]}@1x.png";
+                    Image weatherImage = new Image
+                    {
+                        Source = new BitmapImage(new Uri(imgSource)),
+                        Width = 50,
+                        Height = 50
+                    };
+                    TextBlock timeTextBlock = new TextBlock
+                    {
+                        Text = $"{DateTime.Parse(hourly.Hourly[i].FxTime).Hour}:00",
+                        FontWeight = FontWeights.SemiBold,
+                        HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center,
+                        Margin = new Microsoft.UI.Xaml.Thickness(0, 10, 0, 0)
+                    };
+                    TextBlock descriptionTextBlock = new TextBlock
+                    {
+                        Text = hourly.Hourly[i].Text,
+                        FontWeight = FontWeights.SemiBold,
+                        HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center,
+                        Margin = new Microsoft.UI.Xaml.Thickness(0, 5, 0, 0)
+                    };
+                    TextBlock tempTextBlock = new TextBlock
+                    {
+                        Text = $"{hourly.Hourly[i].Temp}{tempUnit}",
+                        FontWeight = FontWeights.SemiBold,
+                        HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center,
+                        Margin = new Microsoft.UI.Xaml.Thickness(0, 5, 0, 0)
+                    };
+
+                    hourlyContent.Children.Add(weatherImage);
+                    hourlyContent.Children.Add(timeTextBlock);
+                    hourlyContent.Children.Add(descriptionTextBlock);
+                    hourlyContent.Children.Add(tempTextBlock);
+
+                    HourlyForecastStackPanel.Children.Add(hourlyContent);
+                }
+
                 DailyForecastStackPanel.Children.Clear();
 
-                for (int i = 0; i < dailyforecastWeatherResult.Daily.Length; i++)
+                for (int i = 0; i < dailyForecastWeatherResult.Daily.Length; i++)
                 {
                     Microsoft.UI.Xaml.Thickness stackPanelThickness;
                     if (i == 0)
@@ -279,30 +333,38 @@ namespace SunWeather_WinUI3.Views.Pages
                         Margin = stackPanelThickness
                     };
 
-                    string imgSource = $"ms-appx:///Assets/Seniverse/Icon/{qweatherToSeniverseIcon[dailyforecastWeatherResult.Daily[i].IconDay]}@1x.png";
+                    string imgSource = $"ms-appx:///Assets/Seniverse/Icon/{qweatherToSeniverseIcon[dailyForecastWeatherResult.Daily[i].IconDay]}@1x.png";
                     Image weatherImage = new Image
                     {
                         Source = new BitmapImage(new Uri(imgSource)),
                         Width = 50,
                         Height = 50
                     };
-                    TextBlock weatherDescriptionTextBlock = new TextBlock
-                    {
-                        Text = $"{dailyforecastWeatherResult.Daily[i].TempMin}-{dailyforecastWeatherResult.Daily[i].TempMax}{tempUnit}",
-                        FontWeight = FontWeights.SemiBold,
-                        HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center,
-                        Margin = new Microsoft.UI.Xaml.Thickness(0, 5, 0, 0)
-                    };
                     TextBlock dateTimeTextBlock = new TextBlock
                     {
-                        Text = dailyforecastWeatherResult.Daily[i].FxDate,
+                        Text = dailyForecastWeatherResult.Daily[i].FxDate,
                         FontWeight = FontWeights.SemiBold,
                         HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center,
                         Margin = new Microsoft.UI.Xaml.Thickness(0, 10, 0, 0)
                     };
+                    TextBlock weatherDescriptionTextBlock = new TextBlock
+                    {
+                        Text = dailyForecastWeatherResult.Daily[i].TextDay,
+                        FontWeight = FontWeights.SemiBold,
+                        HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center,
+                        Margin = new Microsoft.UI.Xaml.Thickness(0, 5, 0, 0)
+                    };
+                    TextBlock tempTextBlock = new TextBlock
+                    {
+                        Text = $"{dailyForecastWeatherResult.Daily[i].TempMin}-{dailyForecastWeatherResult.Daily[i].TempMax}{tempUnit}",
+                        FontWeight = FontWeights.SemiBold,
+                        HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center,
+                        Margin = new Microsoft.UI.Xaml.Thickness(0, 5, 0, 0)
+                    };
 
                     dailyContent.Children.Add(weatherImage);
                     dailyContent.Children.Add(dateTimeTextBlock);
+                    dailyContent.Children.Add(tempTextBlock);
                     dailyContent.Children.Add(weatherDescriptionTextBlock);
 
                     DailyForecastStackPanel.Children.Add(dailyContent);
@@ -318,8 +380,26 @@ namespace SunWeather_WinUI3.Views.Pages
                 {
                     WeatherWarningBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
                 }
+                Dictionary<string, int> typeToIconType = new Dictionary<string, int>();
+                int toastCount = 0;
+                typeToIconType.Add("红色", 1);
+                typeToIconType.Add("橙色", 2);
+                typeToIconType.Add("黄色", 3);
+                typeToIconType.Add("蓝色", 4);
+                typeToIconType.Add("白色", 5);
+                Dictionary<string, string> existsWarning = new Dictionary<string, string>();
                 for (int i = 0; i < warningResult.Warning.Length; i++)
                 {
+                    try
+                    {
+                        if (existsWarning.ContainsKey(warningResult.Warning[i].TypeName)
+                            && typeToIconType[existsWarning[warningResult.Warning[i].TypeName]]
+                            < typeToIconType[warningResult.Warning[i].Level])
+                        {
+                            continue;
+                        }
+                    }
+                    catch { }
                     Microsoft.UI.Xaml.Thickness stackPanelThickness;
                     if (i == 0)
                     {
@@ -335,12 +415,6 @@ namespace SunWeather_WinUI3.Views.Pages
                         Orientation = Orientation.Vertical,
                         Margin = stackPanelThickness
                     };
-                    Dictionary<string, string> typeToIconType = new Dictionary<string, string>();
-                    typeToIconType.Add("红色", "1");
-                    typeToIconType.Add("橙色", "2");
-                    typeToIconType.Add("黄色", "3");
-                    typeToIconType.Add("蓝色", "4");
-                    typeToIconType.Add("白色", "5");
                     string type = warningResult.Warning[i].Type;
                     if (type.Substring(0, 2) == "10")
                     {
@@ -351,6 +425,7 @@ namespace SunWeather_WinUI3.Views.Pages
                     Image warningImage = new Image
                     {
                         Source = new BitmapImage(new Uri(imgSource)),
+                        HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center,
                         Width = 50,
                         Height = 50
                     };
@@ -363,8 +438,9 @@ namespace SunWeather_WinUI3.Views.Pages
                     };
                     HyperlinkButton warningDescriptionHyperlinkButton = new HyperlinkButton
                     {
-                        NavigateUri = new Uri($"https://www.qweather.com/severe-weather/{warningResult.Warning[i].ID[..9]}.html"),
+                        NavigateUri = new Uri(warningResult.FxLink),
                         Content = "详细信息",
+                        HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center,
                         Margin = new Microsoft.UI.Xaml.Thickness(0, 5, 0, 0)
                     };
 
@@ -373,9 +449,25 @@ namespace SunWeather_WinUI3.Views.Pages
                     warningContent.Children.Add(warningDescriptionHyperlinkButton);
 
                     WeatherWarningStackPanel.Children.Add(warningContent);
+
+                    if (!existsWarning.ContainsKey(warningResult.Warning[i].TypeName))
+                    {
+                        existsWarning.Add(warningResult.Warning[i].TypeName, warningResult.Warning[i].Level);
+                    }
+                    if (DateTime.Parse(warningResult.Warning[i].PubTime) > lastQueryWeatherTime)
+                    {
+                        toastCount++;
+                    }
+                }
+                if (toastCount > 0 && MainWindow.IsBackground)
+                {
+                    new ToastContentBuilder()
+                        .AddText("新预警发布")
+                        .AddText($"{location.Name} 新发布了 {toastCount} 个预警，点击查看")
+                        .Show();
                 }
 
-                queryLocation = location;
+                lastQueryWeatherTime = DateTime.Now;
 
                 StopLoading();
             }

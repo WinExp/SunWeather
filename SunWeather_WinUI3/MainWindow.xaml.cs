@@ -1,4 +1,5 @@
 ﻿using EasyUpdate;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using QWeatherAPI.Result.GeoAPI.CityLookup;
@@ -29,6 +30,7 @@ namespace SunWeather_WinUI3
         private bool isUpdateChecked = false;
         private bool isTrayExit = false;
         private bool isFirstClose = true;
+        internal static bool IsBackground = false;
         internal static HomePage homePage;
         internal static SearchPage searchPage;
 
@@ -49,6 +51,21 @@ namespace SunWeather_WinUI3
                     await CheckUpdateAsync();
                 }
             };
+            ToastNotificationManagerCompat.OnActivated += toastArgs =>
+            {
+                ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
+                if (args.Contains("isTray") && bool.Parse(args["isTray"]))
+                {
+                    return;
+                }
+                this.DispatcherQueue.TryEnqueue(() =>
+                {
+                    this.Show();
+                    this.BringToFront();
+                    HomePageItem.IsSelected = true;
+                    homePage.ToastWarningCallback();
+                });
+            };
             LoadTray();
         }
 
@@ -63,6 +80,7 @@ Release {version.Remove(version.LastIndexOf('.'))}";
             {
                 this.Show();
                 this.BringToFront();
+                IsBackground = false;
             };
             notifyIcon.ContextMenuStrip.Items.Add(new ContextMenuStrip.MenuItem
             {
@@ -72,8 +90,13 @@ Release {version.Remove(version.LastIndexOf('.'))}";
 
             this.Closed += (s, e) =>
             {
-                if (isTrayExit || !Configs.IsTray)
+                bool isDebug = false;
+#if DEBUG
+                isDebug = true;
+#endif
+                if (isTrayExit || !Configs.IsTray || isDebug)
                 {
+                    ToastNotificationManagerCompat.Uninstall();
                     notifyIcon.Dispose();
                 }
                 else
@@ -81,9 +104,22 @@ Release {version.Remove(version.LastIndexOf('.'))}";
                     this.Hide();
                     if (isFirstClose)
                     {
-                        notifyIcon.ShowBalloonTip("提示", "Sun Weather 已最小化至托盘。", ToolTipIcon.Info);
+                        Task.Run(async () =>
+                        {
+                            new ToastContentBuilder()
+                            .AddArgument("isTray", "true")
+                            .AddText("提示")
+                            .AddText("Sun Weather 已最小化至托盘。")
+                            .Show(toast =>
+                            {
+                                toast.Tag = "trayInfo";
+                            });
+                            await Task.Delay(5000);
+                            ToastNotificationManagerCompat.History.Remove("trayInfo");
+                        });
                         isFirstClose = false;
                     }
+                    IsBackground = true;
                     e.Handled = true;
                 }
             };
@@ -232,7 +268,7 @@ Release {version.Remove(version.LastIndexOf('.'))}";
             this.PageContentFrame.Navigate(typeof(SearchPage), null);
             try
             {
-                await searchPage.QueryLocationAsync(sender.Text);
+                searchPage.QueryLocationAsync(sender.Text);
             }
             catch (ArgumentException ex)
             {

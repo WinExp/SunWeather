@@ -1,5 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using SunWeather_WinUI3.Views.Pages;
+using System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,7 +38,7 @@ namespace SunWeather_WinUI3
             base.OnLaunched(args);
         }
 
-        private void UnhandledExceptionProcess(object sender, UnhandledExceptionEventArgs e)
+        private void UnhandledExceptionProcess(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
         {
             ContentDialog contentDialog = new ContentDialog
             {

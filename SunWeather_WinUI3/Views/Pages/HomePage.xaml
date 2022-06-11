@@ -118,11 +118,22 @@
                                 </ScrollViewer>
                             </StackPanel>
                         </Border>
-                        <Border CornerRadius="20" Width="670" Height="230" HorizontalAlignment="Left"
+                        <Border CornerRadius="20" Width="670" Height="250" HorizontalAlignment="Left"
+                                Background="{ThemeResource SystemControlAcrylicElementBrush}" Margin="0,20,0,0">
+                            <StackPanel Orientation="Vertical" Margin="35,30,0,0">
+                                <TextBlock FontSize="35" FontWeight="Bold">24 小时预报</TextBlock>
+                                <ScrollViewer Height="140" Width="605" Margin="0,25,0,0"
+                                              HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Disabled"
+                                              HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <StackPanel x:Name="HourlyForecastStackPanel" Orientation="Horizontal"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="20" Width="670" Height="250" HorizontalAlignment="Left"
                                 Background="{ThemeResource SystemControlAcrylicElementBrush}" Margin="0,20,0,0">
                             <StackPanel Orientation="Vertical" Margin="35,30,0,0">
                                 <TextBlock FontSize="35" FontWeight="Bold">7 天预报</TextBlock>
-                                <ScrollViewer Height="125" Width="605" Margin="0,25,0,0"
+                                <ScrollViewer Height="140" Width="605" Margin="0,25,0,0"
                                               HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Disabled"
                                               HorizontalAlignment="Left" VerticalAlignment="Top">
                                     <StackPanel x:Name="DailyForecastStackPanel" Orientation="Horizontal"/>

@@ -5,7 +5,7 @@ namespace SunWeather_WinUI3.Class
 {
     internal static class Configs
     {
-        internal const string ConfigFilePath = @"Sun Weather\Config.ini";
+        internal const string ConfigFilePath = "Sun Weather\\Config.ini";
         internal const string DefaultApiKey = "847bb1b80e9a417681dd061594197e6c";
 
         internal static QWeatherAPI.Tools.Units Unit;

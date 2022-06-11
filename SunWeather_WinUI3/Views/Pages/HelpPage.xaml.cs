@@ -20,7 +20,7 @@ namespace SunWeather_WinUI3.Views.Pages
         {
             this.InitializeComponent();
 
-            VersionTextBlock.Text = $"Sun Weather {Assembly.GetEntryAssembly().GetName().Version.ToString()}";
+            VersionTextBlock.Text = $"Sun Weather {Assembly.GetEntryAssembly().GetName().Version}";
 
             projectsDictionary.Add("Windows UI Library", "https://github.com/microsoft/microsoft-ui-xaml");
             projectsDictionary.Add("Windows App SDK", "https://github.com/microsoft/WindowsAppSDK");
