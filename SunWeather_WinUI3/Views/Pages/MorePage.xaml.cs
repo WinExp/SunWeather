@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -25,7 +26,7 @@ namespace SunWeather_WinUI3.Views.Pages
     /// </summary>
     public sealed partial class MorePage : Page
     {
-        private const string messagesUrl = "https://we-bucket.oss-cn-shenzhen.aliyuncs.com/Project/Download/SunWeather/Messages/messages.txt";
+        private const string messagesUrl = "https://we-bucket.oss-cn-shenzhen.aliyuncs.com/Project/Download/SunWeather/Message/messages.txt";
         private bool isMessageLoading = false;
         private List<string> messages = new List<string>();
         private List<string> loadedMessages = new List<string>();
@@ -50,10 +51,18 @@ namespace SunWeather_WinUI3.Views.Pages
             bool isLoad = false;
             async Task loadMessages()
             {
+                MessageBorder.Height = 125;
                 MessageLoadingProgressRing.Visibility = Visibility.Visible;
                 MessageLoadingProgressRing.IsActive = true;
                 MessageTextBlock.Visibility = Visibility.Collapsed;
-                messages = (await WebRequests.GetStringAsync(messagesUrl)).Split('\n').ToList();
+                try
+                {
+                    messages = (await WebRequests.GetStringAsync(messagesUrl)).Split('\n').ToList();
+                }
+                catch (Exception ex)
+                {
+                    messages = new List<string>() { $"无法获取回声洞信息：{ex.Message}" };
+                }
                 MessageLoadingProgressRing.IsActive = false;
                 MessageLoadingProgressRing.Visibility = Visibility.Collapsed;
                 MessageTextBlock.Visibility = Visibility.Visible;

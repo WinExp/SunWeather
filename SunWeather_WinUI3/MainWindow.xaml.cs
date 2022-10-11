@@ -27,6 +27,7 @@ namespace SunWeather_WinUI3
     {
         private Dictionary<string, Location> locationDictionary = new Dictionary<string, Location>();
         private ObservableCollection<string> locationName = new ObservableCollection<string>();
+        private const string updateInfoUrl = "https://we-bucket.oss-cn-shenzhen.aliyuncs.com/Project/Download/SunWeather/Update/updateInfo.xml";
         private bool isUpdateChecked = false;
         private bool isTrayExit = false;
         private bool isFirstClose = true;
@@ -41,6 +42,7 @@ namespace SunWeather_WinUI3
             SearchPage.mainWindow = this;
             SettingPage.mainWindow = this;
             this.SetIcon("Assets/App_Icon_Content_64.ico");
+            this.Backdrop = new MicaSystemBackdrop();
             this.SearchLocationAutoSuggestBox.ItemsSource = locationName;
             Configs.LoadConfig();
             this.Activated += async delegate
@@ -48,9 +50,14 @@ namespace SunWeather_WinUI3
                 if (Configs.IsAutoUpdate && !isUpdateChecked)
                 {
                     isUpdateChecked = true;
-                    await CheckUpdateAsync();
+                    try
+                    {
+                        await CheckUpdateAsync();
+                    }
+                    catch { }
                 }
             };
+            ToastNotificationManagerCompat.History.Clear();
             ToastNotificationManagerCompat.OnActivated += toastArgs =>
             {
                 ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
@@ -63,7 +70,7 @@ namespace SunWeather_WinUI3
                     this.Show();
                     this.BringToFront();
                     HomePageItem.IsSelected = true;
-                    homePage.ToastWarningCallback();
+                    homePage.ToastCallback();
                 });
             };
             LoadTray();
@@ -142,22 +149,53 @@ Release {version.Remove(version.LastIndexOf('.'))}";
 
         internal async Task CheckUpdateAsync()
         {
-            var updateInfo = await Updater.GetUpdateInfoAsync("https://we-bucket.oss-cn-shenzhen.aliyuncs.com/Project/Download/SunWeather/Update/updateInfo.xml");
-            if (updateInfo.IsUpdateAvailable)
+            try
+            {
+                var updateInfo = await Updater.GetUpdateInfoAsync(updateInfoUrl);
+                if (updateInfo.IsUpdateAvailable)
+                {
+                    if (updateInfo.Forced == ForcedMode.Normal)
+                    {
+                        ContentDialog contentDialog = new ContentDialog
+                        {
+                            Title = "更新可用",
+                            Content = $"Sun Weather {updateInfo.Version} 版本可用。您正在使用 {Assembly.GetEntryAssembly().GetName().Version}，请问是否要更新？",
+                            PrimaryButtonText = "更新",
+                            CloseButtonText = "下次再说",
+                            DefaultButton = ContentDialogButton.Primary,
+                            XamlRoot = this.Content.XamlRoot
+                        };
+                        if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
+                        {
+                            await StartUpdateAsync(updateInfo);
+                        }
+                    }
+                    else
+                    {
+                        ContentDialog contentDialog = new ContentDialog
+                        {
+                            Title = "更新可用",
+                            Content = $"Sun Weather {updateInfo.Version} 版本可用。您正在使用 {Assembly.GetEntryAssembly().GetName().Version}，你必须更新到此版本才可继续使用 Sun Weather。",
+                            PrimaryButtonText = "更新",
+                            DefaultButton = ContentDialogButton.Primary,
+                            XamlRoot = this.Content.XamlRoot
+                        };
+                        if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
+                        {
+                            await StartUpdateAsync(updateInfo);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
             {
                 ContentDialog contentDialog = new ContentDialog
                 {
-                    Title = "更新可用",
-                    Content = $"Sun Weather {updateInfo.Version} 版本可用。您正在使用 {Assembly.GetEntryAssembly().GetName().Version}，请问是否要更新？",
-                    PrimaryButtonText = "更新",
-                    CloseButtonText = "下次再说",
-                    DefaultButton = ContentDialogButton.Primary,
-                    XamlRoot = this.Content.XamlRoot
+                    Title = "发生错误",
+                    Content = $@"在更新时出现错误，错误信息：
+{ex}"
                 };
-                if (await contentDialog.ShowAsync() == ContentDialogResult.Primary)
-                {
-                    await StartUpdateAsync(updateInfo);
-                }
+                await contentDialog.ShowAsync();
             }
         }
 

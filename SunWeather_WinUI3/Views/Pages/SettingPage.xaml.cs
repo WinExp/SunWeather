@@ -69,6 +69,8 @@ namespace SunWeather_WinUI3.Views.Pages
 
                 AutoUpdateToggleSwitch.IsOn = Configs.IsAutoUpdate;
                 TrayToggleSwitch.IsOn = Configs.IsTray;
+                ToastRainCheckBox.IsChecked = Configs.IsToastRain;
+                ToastWarningCheckBox.IsChecked = Configs.IsToastWarning;
             };
         }
 
@@ -111,7 +113,9 @@ namespace SunWeather_WinUI3.Views.Pages
                 || unit != Configs.Unit
                 || delay != Configs.AutoRefreshDelay
                 || AutoUpdateToggleSwitch.IsOn != Configs.IsAutoUpdate
-                || TrayToggleSwitch.IsOn != Configs.IsTray)
+                || TrayToggleSwitch.IsOn != Configs.IsTray
+                || ToastRainCheckBox.IsChecked != Configs.IsToastRain
+                || ToastWarningCheckBox.IsChecked != Configs.IsToastWarning)
             {
                 SaveConfigButton.Opacity = 1;
                 return;
@@ -164,44 +168,43 @@ namespace SunWeather_WinUI3.Views.Pages
                 return;
             }
 
-            using (ConfigWriter configWriter = new ConfigWriter(Configs.ConfigFilePath))
+            Units unit;
+            if ((bool)MetricRadioButton.IsChecked)
             {
-                RadioButton radioButton;
-                if ((bool)MetricRadioButton.IsChecked)
-                {
-                    radioButton = MetricRadioButton;
-                }
-                else
-                {
-                    radioButton = InchRadioButton;
-                }
-
-                string delay;
-                if ((bool)OffAutoRefreshRadioButton.IsChecked)
-                {
-                    delay = "-1";
-                }
-                else if ((bool)FiveMinuteAutoRefreshRadioButton.IsChecked)
-                {
-                    delay = "5";
-                }
-                else if ((bool)TenMinuteAutoRefreshRadioButton.IsChecked)
-                {
-                    delay = "10";
-                }
-                else
-                {
-                    delay = CustomMinuteAutoRefreshNumberBox.Text;
-                }
-
-                configWriter.SetConfigValue("Unit", radioButton.Tag.ToString());
-                configWriter.SetConfigValue("ApiKey", ApiKeyPasswordBox.Password == "" ? Configs.DefaultApiKey : ApiKeyPasswordBox.Password);
-                configWriter.SetConfigValue("AutoRefreshDelay", delay);
-                configWriter.SetConfigValue("IsAutoUpdate", AutoUpdateToggleSwitch.IsOn.ToString());
-                configWriter.SetConfigValue("IsTray", TrayToggleSwitch.IsOn.ToString());
-                configWriter.WriteInFile();
+                unit = Units.Metric;
             }
-            Configs.LoadConfig();
+            else
+            {
+                unit = Units.Inch;
+            }
+
+            int delay;
+            if ((bool)OffAutoRefreshRadioButton.IsChecked)
+            {
+                delay = -1;
+            }
+            else if ((bool)FiveMinuteAutoRefreshRadioButton.IsChecked)
+            {
+                delay = 5;
+            }
+            else if ((bool)TenMinuteAutoRefreshRadioButton.IsChecked)
+            {
+                delay = 10;
+            }
+            else
+            {
+                delay = int.Parse(CustomMinuteAutoRefreshNumberBox.Text);
+            }
+
+            Configs.Unit = unit;
+            Configs.ApiKey = ApiKeyPasswordBox.Password == "" ? Configs.DefaultApiKey : ApiKeyPasswordBox.Password;
+            Configs.AutoRefreshDelay = delay;
+            Configs.IsAutoUpdate = AutoUpdateToggleSwitch.IsOn;
+            Configs.IsTray = TrayToggleSwitch.IsOn;
+            Configs.IsToastRain = (bool)ToastRainCheckBox.IsChecked;
+            Configs.IsToastWarning = (bool)ToastWarningCheckBox.IsChecked;
+            Configs.WriteConfig();
+
             UpdateSaveButtonStatus();
         }
 
@@ -218,6 +221,72 @@ namespace SunWeather_WinUI3.Views.Pages
         private async void CheckUpdateButton_Click(object sender, RoutedEventArgs e)
         {
             await mainWindow.CheckUpdateAsync();
+        }
+
+        private void UpdateToastCheckBoxesStatus()
+        {
+            if ((bool)ToastRainCheckBox.IsChecked
+                && (bool)ToastWarningCheckBox.IsChecked)
+            {
+                ToastCheckBox.IsChecked = true;
+            }
+            else if (!(bool)ToastRainCheckBox.IsChecked
+                && !(bool)ToastWarningCheckBox.IsChecked)
+            {
+                ToastCheckBox.IsChecked = false;
+            }
+            else
+            {
+                ToastCheckBox.IsChecked = null;
+            }
+        }
+
+        private void ToastCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ToastRainCheckBox.IsChecked = true;
+            ToastWarningCheckBox.IsChecked = true;
+            UpdateSaveButtonStatus();
+        }
+
+        private void ToastCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ToastRainCheckBox.IsChecked = false;
+            ToastWarningCheckBox.IsChecked = false;
+            UpdateSaveButtonStatus();
+        }
+
+        private void ToastCheckBox_Indeterminate(object sender, RoutedEventArgs e)
+        {
+            if ((bool)ToastRainCheckBox.IsChecked
+                && (bool)ToastWarningCheckBox.IsChecked)
+            {
+                ToastCheckBox.IsChecked = false;
+            }
+            UpdateSaveButtonStatus();
+        }
+
+        private void ToastRainCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            UpdateToastCheckBoxesStatus();
+            UpdateSaveButtonStatus();
+        }
+
+        private void ToastRainCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            UpdateToastCheckBoxesStatus();
+            UpdateSaveButtonStatus();
+        }
+
+        private void ToastWarningCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            UpdateToastCheckBoxesStatus();
+            UpdateSaveButtonStatus();
+        }
+
+        private void ToastWarningCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            UpdateToastCheckBoxesStatus();
+            UpdateSaveButtonStatus();
         }
     }
 }

@@ -10,7 +10,8 @@
     <Grid>
         <StackPanel Orientation="Vertical" Margin="30,30,0,0">
             <TextBlock FontSize="30" FontWeight="Bold">更多</TextBlock>
-            <Border x:Name="MessageBorder" CornerRadius="10" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+            <Border x:Name="MessageBorder" CornerRadius="10" BorderThickness="1"
+                    BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
                     Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="300" Height="125"
                     PointerEntered="MessageBorder_PointerEntered" PointerExited="MessageBorder_PointerExited" PointerReleased="MessageBorder_PointerReleased"
                     HorizontalAlignment="Left" Margin="0,30,0,0">
@@ -21,6 +22,15 @@
                     <TextBlock x:Name="MessageTextBlock" FontSize="15" TextWrapping="Wrap"
                                Margin="0,15,0,0" Width="250" HorizontalAlignment="Left"
                                VerticalAlignment="Top">点击此处查看网友们的留言！</TextBlock>
+                </StackPanel>
+            </Border>
+
+            <Border CornerRadius="20" Width="200" Height="210"
+                    Background="{ThemeResource SystemControlAcrylicElementBrush}" Margin="25,0,0,0">
+                <StackPanel Orientation="Vertical" Margin="30,30,0,0">
+                    <TextBlock FontSize="35" FontWeight="Bold">今日诗词</TextBlock>
+                    <TextBlock x:Name="ShiciTextBlock" FontSize="20" Margin="-27,20,0,0"
+                                               TextWrapping="Wrap" Width="140"/>
                 </StackPanel>
             </Border>
         </StackPanel>

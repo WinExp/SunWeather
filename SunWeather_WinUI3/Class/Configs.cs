@@ -13,8 +13,25 @@ namespace SunWeather_WinUI3.Class
         internal static int AutoRefreshDelay;
         internal static bool IsAutoUpdate;
         internal static bool IsTray;
+        internal static bool IsToastRain;
+        internal static bool IsToastWarning;
 
-        // 读取配置文件
+        internal static void WriteConfig()
+        {
+            using (ConfigWriter writer = new ConfigWriter(ConfigFilePath))
+            {
+                writer.SetConfigValue("Unit", Unit.ToString());
+                writer.SetConfigValue("ApiKey", ApiKey == DefaultApiKey ? "" : ApiKey);
+                writer.SetConfigValue("AutoRefreshDelay", AutoRefreshDelay.ToString());
+                writer.SetConfigValue("IsAutoUpdate", IsAutoUpdate.ToString());
+                writer.SetConfigValue("IsTray", IsTray.ToString());
+                writer.SetConfigValue("IsToastRain", IsToastRain.ToString());
+                writer.SetConfigValue("IsToastWarning", IsToastWarning.ToString());
+                writer.WriteInFile();
+            }
+            LoadConfig();
+        }
+
         internal static void LoadConfig()
         {
             // 写入默认配置
@@ -27,6 +44,8 @@ namespace SunWeather_WinUI3.Class
                     configWriter.SetConfigValue("AutoRefreshDelay", "5");
                     configWriter.SetConfigValue("IsAutoUpdate", "True");
                     configWriter.SetConfigValue("IsTray", "True");
+                    configWriter.SetConfigValue("IsToastRain", "True");
+                    configWriter.SetConfigValue("IsToastWarning", "True");
                     configWriter.WriteInFile();
                 }
             }
@@ -64,8 +83,9 @@ namespace SunWeather_WinUI3.Class
                     AutoRefreshDelay = delay;
 
                     IsAutoUpdate = bool.Parse(configLoader.GetValue("IsAutoUpdate"));
-
                     IsTray = bool.Parse(configLoader.GetValue("IsTray"));
+                    IsToastRain = bool.Parse(configLoader.GetValue("IsToastRain"));
+                    IsToastWarning = bool.Parse(configLoader.GetValue("IsToastWarning"));
                 }
             }
             catch
@@ -80,6 +100,10 @@ namespace SunWeather_WinUI3.Class
                     Unit = QWeatherAPI.Tools.Units.Metric;
                     ApiKey = DefaultApiKey;
                     AutoRefreshDelay = 5;
+                    IsAutoUpdate = true;
+                    IsTray = true;
+                    IsToastRain = true;
+                    IsToastWarning = true;
                 }
             }
         }

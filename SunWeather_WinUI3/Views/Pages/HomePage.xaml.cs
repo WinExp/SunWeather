@@ -9,6 +9,8 @@ using SunWeather_WinUI3.Class.API.JinrishiciAPI.Shici;
 using SunWeather_WinUI3.Class.API.JinrishiciAPI.Token;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -24,6 +26,7 @@ namespace SunWeather_WinUI3.Views.Pages
         private readonly Dictionary<string, string> qweatherToSeniverseIcon = new Dictionary<string, string>();
         private Location queryLocation;
         private Location geoLocation;
+        private DateTime? toastRainStopTime;
         private DateTime? lastQueryWeatherTime;
         internal static bool CustomLocation = false;
 
@@ -139,9 +142,16 @@ namespace SunWeather_WinUI3.Views.Pages
             GeoIPAsync();
         }
 
-        internal void ToastWarningCallback()
+        internal void ToastCallback()
         {
-            QueryWeatherAsync(geoLocation);
+            if (geoLocation == null)
+            {
+                GeoIPAsync();
+            }
+            else
+            {
+                QueryWeatherAsync(geoLocation);
+            }
         }
 
         private async Task GeoIPAsync()
@@ -245,7 +255,7 @@ namespace SunWeather_WinUI3.Views.Pages
                 this.FeelsLikeTempTextBlock.Text = $"感觉像 {weather.Now.FeelsLike}{tempUnit}";
                 this.WeatherDescriptionTextBlock.Text = weather.Now.Text;
 
-                ShiciTextBlock.Text = await ShiciAPI.QueryShiciAPIAsync(await TokenAPI.QueryTokenAsync());
+                //ShiciTextBlock.Text = await ShiciAPI.QueryShiciAPIAsync(await TokenAPI.QueryTokenAsync());
 
                 var dailyForecastWeatherResult =
                     await QWeatherAPI.WeatherDailyForecastAPI.GetWeatherDailyForecastAsync(location.Lon, location.Lat, Configs.ApiKey, unit: Configs.Unit, dailyCount: QWeatherAPI.WeatherDailyForecastAPI.DailyCount._7Day);
@@ -257,17 +267,32 @@ namespace SunWeather_WinUI3.Views.Pages
                 WindDirTextBlock.Text = daily.WindDirDay;
 
                 var hourly = await QWeatherAPI.WeatherHourlyForecastAPI.GetHourlyForecastWeatherAsync(location.Lon, location.Lat, Configs.ApiKey, Configs.Unit);
+                string toastRain = null;
+                Uri toastImgSource = null;
                 HourlyForecastStackPanel.Children.Clear();
                 for (int i = 0; i < 24; i++)
                 {
                     Microsoft.UI.Xaml.Thickness stackPanelThickness;
+                    DateTime fxTime = DateTime.Parse(hourly.Hourly[i].FxTime);
+                    string time = fxTime.Hour.ToString().Length == 2 ? fxTime.Hour.ToString() : '0' + fxTime.Hour.ToString();
                     if (i == 0)
                     {
                         stackPanelThickness = new Microsoft.UI.Xaml.Thickness();
+                        if ((toastRainStopTime == null ? true : DateTime.Now > toastRainStopTime)
+                            && !weather.Now.Text.Contains('雨') && hourly.Hourly[i].Text.Contains('雨'))
+                        {
+                            toastRain = $"在 {time} 点会开始下{hourly.Hourly[i].Text}。";
+                            toastRainStopTime = fxTime.AddHours(1);
+                            toastImgSource = new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Assets/Seniverse/Icon/{qweatherToSeniverseIcon[hourly.Hourly[i].Icon]}@1x.png"), UriKind.RelativeOrAbsolute);
+                        }
                     }
                     else
                     {
                         stackPanelThickness = new Microsoft.UI.Xaml.Thickness(30, 0, 0, 0);
+                        if (toastRainStopTime == fxTime)
+                        {
+                            toastRainStopTime.Value.AddHours(1);
+                        }
                     }
 
                     StackPanel hourlyContent = new StackPanel
@@ -285,7 +310,7 @@ namespace SunWeather_WinUI3.Views.Pages
                     };
                     TextBlock timeTextBlock = new TextBlock
                     {
-                        Text = $"{DateTime.Parse(hourly.Hourly[i].FxTime).Hour}:00",
+                        Text = $"{time}:00",
                         FontWeight = FontWeights.SemiBold,
                         HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center,
                         Margin = new Microsoft.UI.Xaml.Thickness(0, 10, 0, 0)
@@ -311,6 +336,38 @@ namespace SunWeather_WinUI3.Views.Pages
                     hourlyContent.Children.Add(tempTextBlock);
 
                     HourlyForecastStackPanel.Children.Add(hourlyContent);
+                }
+
+                if (geoLocation != null && geoLocation.ID != location.ID)
+                {
+                    hourly = await QWeatherAPI.WeatherHourlyForecastAPI.GetHourlyForecastWeatherAsync(geoLocation.Lon, geoLocation.Lat, Configs.ApiKey, Configs.Unit);
+                    if (!weather.Now.Text.Contains('雨') && hourly.Hourly[0].Text.Contains('雨'))
+                    {
+                        DateTime fxTime = DateTime.Parse(hourly.Hourly[0].FxTime);
+                        string time = fxTime.Hour.ToString().Length == 2 ? fxTime.Hour.ToString() : '0' + fxTime.Hour.ToString();
+                        toastRainStopTime = fxTime.AddHours(1);
+                        foreach (var hour in hourly.Hourly.Skip(1))
+                        {
+                            if (!hour.Text.Contains('雨'))
+                            {
+                                break;
+                            }
+                            toastRainStopTime.Value.AddHours(1);
+                        }
+                        toastRain = $"在 {time} 点会开始下{hourly.Hourly[0].Text}。";
+                        toastImgSource = new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Assets/Seniverse/Icon/{qweatherToSeniverseIcon[hourly.Hourly[0].Icon]}@1x.png"), UriKind.RelativeOrAbsolute);
+                    }
+                }
+                if (Configs.IsToastRain && MainWindow.IsBackground && toastRain != null)
+                {
+                    new ToastContentBuilder()
+                        .AddText("要下雨了")
+                        .AddText(toastRain)
+                        .AddAppLogoOverride(toastImgSource)
+                        .Show(toast =>
+                        {
+                            toast.ExpirationTime = DateTime.Now.AddMinutes(15);
+                        });
                 }
 
                 DailyForecastStackPanel.Children.Clear();
@@ -381,6 +438,7 @@ namespace SunWeather_WinUI3.Views.Pages
                     WeatherWarningBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
                 }
                 Dictionary<string, int> typeToIconType = new Dictionary<string, int>();
+                DateTime toastExpirationTime = DateTime.Now;
                 int toastCount = 0;
                 typeToIconType.Add("红色", 1);
                 typeToIconType.Add("橙色", 2);
@@ -390,6 +448,11 @@ namespace SunWeather_WinUI3.Views.Pages
                 Dictionary<string, string> existsWarning = new Dictionary<string, string>();
                 for (int i = 0; i < warningResult.Warning.Length; i++)
                 {
+                    DateTime endTime = DateTime.Parse(warningResult.Warning[i].EndTime);
+                    if (endTime > toastExpirationTime)
+                    {
+                        toastExpirationTime = endTime;
+                    }
                     try
                     {
                         if (existsWarning.ContainsKey(warningResult.Warning[i].TypeName)
@@ -454,17 +517,32 @@ namespace SunWeather_WinUI3.Views.Pages
                     {
                         existsWarning.Add(warningResult.Warning[i].TypeName, warningResult.Warning[i].Level);
                     }
-                    if (DateTime.Parse(warningResult.Warning[i].PubTime) > lastQueryWeatherTime)
+                    if (geoLocation != null && geoLocation.ID == queryLocation.ID && DateTime.Parse(warningResult.Warning[i].PubTime) > lastQueryWeatherTime)
                     {
                         toastCount++;
                     }
                 }
-                if (toastCount > 0 && MainWindow.IsBackground)
+                if (geoLocation != null && geoLocation.ID != location.ID)
+                {
+                    var warnings = await QWeatherAPI.WeatherWarningAPI.GetWeatherWarningAsync(geoLocation.Lon,
+                        geoLocation.Lat, Configs.ApiKey);
+                    foreach (var warning in warnings.Warning)
+                    {
+                        if (DateTime.Parse(warning.PubTime) > lastQueryWeatherTime)
+                        {
+                            toastCount++;
+                        }
+                    }
+                }
+                if (Configs.IsToastWarning && MainWindow.IsBackground && toastCount > 0)
                 {
                     new ToastContentBuilder()
                         .AddText("新预警发布")
-                        .AddText($"{location.Name} 新发布了 {toastCount} 个预警，点击查看")
-                        .Show();
+                        .AddText($"{location.Name} 新发布了 {toastCount} 个预警，点击查看。")
+                        .Show(toast =>
+                        {
+                            toast.ExpirationTime = toastExpirationTime;
+                        });
                 }
 
                 lastQueryWeatherTime = DateTime.Now;

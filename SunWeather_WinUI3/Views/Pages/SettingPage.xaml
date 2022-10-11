@@ -61,6 +61,18 @@
                     <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold">后台运行</TextBlock>
                     <ToggleSwitch x:Name="TrayToggleSwitch" Margin="0,5,0,0" Toggled="TraySwitch_Toggled"/>
                 </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+                    <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold">通知推送</TextBlock>
+                    <CheckBox x:Name="ToastCheckBox" IsThreeState="True" Content="推送通知"
+                              Checked="ToastCheckBox_Checked" Unchecked="ToastCheckBox_Unchecked"
+                              Indeterminate="ToastCheckBox_Indeterminate" Margin="0,5,0,0"/>
+                    <CheckBox x:Name="ToastRainCheckBox" Checked="ToastRainCheckBox_Checked"
+                              Unchecked="ToastRainCheckBox_Unchecked"
+                              Margin="15,0,0,0" Content="下雨通知"/>
+                    <CheckBox x:Name="ToastWarningCheckBox" Checked="ToastWarningCheckBox_Checked"
+                              Unchecked="ToastWarningCheckBox_Unchecked"
+                              Margin="15,0,0,0" Content="天气预警通知"/>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
         <Button x:Name="SaveConfigButton" Content="保存" Style="{ThemeResource AccentButtonStyle}"

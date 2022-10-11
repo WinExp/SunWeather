@@ -44,7 +44,7 @@ namespace SunWeather_WinUI3
             {
                 Content = $@"程序出现错误，请将此弹窗截图发送给开发者。
 错误信息：
-{e.Message}",
+{e}",
                 CloseButtonText = "OK",
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = m_window.Content.XamlRoot

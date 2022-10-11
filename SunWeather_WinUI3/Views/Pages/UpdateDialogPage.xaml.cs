@@ -41,6 +41,7 @@ namespace SunWeather_WinUI3.Views.Pages
                 await Task.Delay(500);
             }
             UpdateProgressPercentTextBlock.Text = "已完成";
+            UpdateProgressPercentProgressBar.Value = 100;
             for (int i = 5; i >= 0; i--)
             {
                 UpdateStatusTextBlock.Text = $"程序将在 {i} 秒后退出...";
