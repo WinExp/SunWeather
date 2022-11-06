@@ -255,7 +255,7 @@ namespace SunWeather_WinUI3.Views.Pages
                 this.FeelsLikeTempTextBlock.Text = $"感觉像 {weather.Now.FeelsLike}{tempUnit}";
                 this.WeatherDescriptionTextBlock.Text = weather.Now.Text;
 
-                //ShiciTextBlock.Text = await ShiciAPI.QueryShiciAPIAsync(await TokenAPI.QueryTokenAsync());
+                ShiciTextBlock.Text = await ShiciAPI.QueryShiciAPIAsync(await TokenAPI.QueryTokenAsync());
 
                 var dailyForecastWeatherResult =
                     await QWeatherAPI.WeatherDailyForecastAPI.GetWeatherDailyForecastAsync(location.Lon, location.Lat, Configs.ApiKey, unit: Configs.Unit, dailyCount: QWeatherAPI.WeatherDailyForecastAPI.DailyCount._7Day);

@@ -1,5 +1,6 @@
 ﻿using EasyUpdate;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using QWeatherAPI.Result.GeoAPI.CityLookup;
@@ -42,11 +43,11 @@ namespace SunWeather_WinUI3
             SearchPage.mainWindow = this;
             SettingPage.mainWindow = this;
             this.SetIcon("Assets/App_Icon_Content_64.ico");
-            this.Backdrop = new MicaSystemBackdrop();
             this.SearchLocationAutoSuggestBox.ItemsSource = locationName;
             Configs.LoadConfig();
             this.Activated += async delegate
             {
+                if (MicaController.IsSupported()) this.Backdrop = new MicaSystemBackdrop();
                 if (Configs.IsAutoUpdate && !isUpdateChecked)
                 {
                     isUpdateChecked = true;
